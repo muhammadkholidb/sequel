@@ -17,10 +17,10 @@ public class LimitFactory {
     private final String dbProductName;
 
     public LimitFactory(DataSource dataSource) throws SQLException {
-        Connection conn = dataSource.getConnection();
-        dbProductName = conn.getMetaData().getDatabaseProductName().toLowerCase();
-        conn.close();
-        log.info("Database product name: {}", dbProductName);
+        try (Connection conn = dataSource.getConnection()) {
+            dbProductName = conn.getMetaData().getDatabaseProductName().toLowerCase();
+            log.info("Database product name: {}", dbProductName);
+        }
     }
 
     public Limit create(int limit, int offset) {

@@ -46,7 +46,7 @@ public class Order {
         return "";
     }
 
-    public static enum Direction {
+    public enum Direction {
         ASCENDING("ASC"),
         DESCENDING("DESC");
 

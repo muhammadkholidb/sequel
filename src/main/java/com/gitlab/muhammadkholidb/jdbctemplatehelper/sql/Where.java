@@ -39,6 +39,7 @@ public class Where {
     }
 
     public Where in(String column, Object[] values) {
+        andIn(column, values);
         return this;
     }
 
@@ -94,9 +95,7 @@ public class Where {
 
     public List<Object> getValues() {
         List<Object> values = new ArrayList<>();
-        holders.forEach((holder) -> {
-            values.add(holder.value);
-        });
+        holders.forEach(holder -> values.add(holder.value));
         return values;
     }
 
@@ -110,7 +109,7 @@ public class Where {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(" WHERE 1=1 ");
-        holders.forEach((holder) -> {
+        holders.forEach(holder -> {
             sb.append(holder.operator);
             switch (holder.condition) {
             case EQUALS:
