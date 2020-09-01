@@ -33,6 +33,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +54,9 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Autowired
     protected JdbcTemplate jdbcTemplate;
     
+    @Autowired
+    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     protected Class<M> modelClass;
 
     private String tableName;
