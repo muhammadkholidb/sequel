@@ -59,7 +59,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Autowired
     protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Value("${jdbc.formatsql}")
+    @Value("${jdbc.formatsql:false}")
     protected Boolean formatSql;
 
     protected Class<M> modelClass;
