@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.gitlab.muhammadkholidb.jdbctemplatehelper.annotation.DataColumn;
 import com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel;
 import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Limit;
@@ -31,6 +32,7 @@ import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Where;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -56,6 +58,9 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     
     @Autowired
     protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Value("${jdbc.formatsql}")
+    protected Boolean formatSql;
 
     protected Class<M> modelClass;
 
@@ -138,6 +143,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         return read(where, order, limit, includeDeleted, false);
     }
 
+    private void printGeneratedSQL(String sql) {
+        log.debug("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SqlFormatter.format(sql) : sql);
+    }
+
     @Override
     public List<M> read(Where where, Order order, Limit limit, boolean includeDeleted, boolean forUpdate) {
         StringBuilder sb = new StringBuilder();
@@ -161,7 +170,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(" FOR UPDATE "); // Set table row locking
         }
         String sql = sb.toString();
-        log.debug("Generated SQL: {}", sql);
+        printGeneratedSQL(sql);
         return jdbcTemplate.query(sql, where == null ? new Object[] {} : where.getValues().toArray(), BeanPropertyRowMapper.newInstance(modelClass));
     }
 
@@ -233,7 +242,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(limit.getClause());
         }
         String sql = sb.toString();
-        log.debug("Generated SQL: {}", sql);
+        printGeneratedSQL(sql);
         return jdbcTemplate.queryForObject(sql, where == null ? new Object[] {} : where.getValues().toArray(), Integer.class);
     }
 
@@ -275,7 +284,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Override
     public Optional<M> readOne(Where where, Order order, boolean forUpdate) {
         List<M> list = read(where, order, limitFactory.create(1), forUpdate);
-        if (list.size() > 0) {
+        if (list.isEmpty()) {
             return Optional.of(list.get(0));
         }
         return Optional.empty();
@@ -329,9 +338,9 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             listValues.add(now);
         }
         String sql = buildSqlInsert(tableName, listColumns).toString();
-        log.debug("Generated SQL: {}", sql);
+        printGeneratedSQL(sql);
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
-        jdbcTemplate.update((con) -> {
+        jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             for (int i = 0; i < listValues.size(); i++) {
                 ps.setObject(i + 1, listValues.get(i));
@@ -452,8 +461,8 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             listValues.addAll(where.getValues());
         }
         String sql = buildSqlUpdate(tableName, listColumns, where).toString();
-        log.debug("Generated SQL: {}", sql);
-        return jdbcTemplate.update((con) -> {
+        printGeneratedSQL(sql);
+        return jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql);
             for (int i = 0; i < listValues.size(); i++) {
                 ps.setObject(i + 1, listValues.get(i));
@@ -493,8 +502,9 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         if (where != null) {
             sb.append(where.getClause());
         }
-        log.debug("Generated SQL: {}", sb);
-        return jdbcTemplate.update(sb.toString(), where == null ? new Object[] {} : where.getValues().toArray());
+        String sql = sb.toString();
+        printGeneratedSQL(sql);
+        return jdbcTemplate.update(sql, where == null ? new Object[] {} : where.getValues().toArray());
     } 
 
     @Override
