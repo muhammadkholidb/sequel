@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;
-    
+
     @Autowired
     protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -78,12 +79,8 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         try {
             Method method = this.modelClass.getMethod("tableName");
             tableName = (String) method.invoke(this.modelClass.getDeclaredConstructor().newInstance());
-        } catch (IllegalAccessException
-                | IllegalArgumentException
-                | InvocationTargetException
-                | NoSuchMethodException
-                | SecurityException
-                | InstantiationException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | SecurityException | InstantiationException e) {
 
             log.error("Cannot find and invoke method tableName() of the underlying class", e);
         }
@@ -144,7 +141,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     private void printGeneratedSQL(String sql) {
-        log.debug("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SqlFormatter.format(sql) : sql);
+        log.trace("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SqlFormatter.format(sql) : sql);
     }
 
     @Override
@@ -183,7 +180,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     public List<M> readForUpdate(boolean includeDeleted) {
         return readForUpdate(null, includeDeleted);
     }
-    
+
     @Override
     public List<M> readForUpdate(Where where) {
         return readForUpdate(where, false);
@@ -193,7 +190,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     public List<M> readForUpdate(Where where, boolean includeDeleted) {
         return readForUpdate(where, null, null, includeDeleted);
     }
-    
+
     @Override
     public List<M> readForUpdate(Where where, Limit limit) {
         return readForUpdate(where, limit, false);
@@ -203,7 +200,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     public List<M> readForUpdate(Where where, Limit limit, boolean includeDeleted) {
         return readForUpdate(where, null, limit, includeDeleted);
     }
-    
+
     @Override
     public List<M> readForUpdate(Where where, Order order) {
         return readForUpdate(where, order, false);
@@ -223,7 +220,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     public List<M> readForUpdate(Where where, Order order, Limit limit, boolean includeDeleted) {
         return read(where, order, limit, includeDeleted, true);
     }
-    
+
     @Override
     public int count(Where where, Order order, Limit limit) {
         StringBuilder sb = new StringBuilder();
@@ -294,7 +291,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
-        for (Field field : FieldUtils.getFieldsWithAnnotation(modelClass, DataColumn.class)) { 
+        for (Field field : FieldUtils.getFieldsWithAnnotation(modelClass, DataColumn.class)) {
             field.setAccessible(true);
             try {
                 Object val = field.get(model);
@@ -304,7 +301,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
                 }
             } catch (Exception e) {
                 log.error("Failed to get value of field: {}: {}", field.getName(), e.getMessage());
-            } 
+            }
         }
         return executeInsert(columns.toArray(new String[columns.size()]), values.toArray());
     }
@@ -348,7 +345,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     private Long getGeneratedId(GeneratedKeyHolder holder) {
-        String[] keyNames = new String[] {C_ID, "GENERATED_ID", "GENERATED_KEY"};
+        String[] keyNames = new String[] { C_ID, "GENERATED_ID", "GENERATED_KEY" };
         Map<String, Object> keys = holder.getKeys();
         if (keys != null) {
             for (String name : keyNames) {
@@ -424,14 +421,14 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         List<String> columns = new ArrayList<>();
         List<Object> values = new ArrayList<>();
-        for (Field field : FieldUtils.getFieldsWithAnnotation(modelClass, DataColumn.class)) { 
+        for (Field field : FieldUtils.getFieldsWithAnnotation(modelClass, DataColumn.class)) {
             field.setAccessible(true);
             try {
                 values.add(field.get(model));
                 columns.add(field.getAnnotation(DataColumn.class).value());
             } catch (Exception e) {
                 log.error("Failed to get value of field: {}: {}", field.getName(), e.getMessage());
-            } 
+            }
         }
         return update(columns.toArray(new String[columns.size()]), values.toArray(), model.getId());
     }
@@ -493,7 +490,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Override
     public Integer delete(Where where, boolean force) {
         if (!force) {
-            return update(new String[]{C_DELETED_AT}, new Object[]{Timestamp.from(Instant.now())}, where);
+            return update(new String[] { C_DELETED_AT }, new Object[] { Timestamp.from(Instant.now()) }, where);
         }
         StringBuilder sb = new StringBuilder();
         sb.append(" DELETE FROM ");
