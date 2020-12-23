@@ -77,7 +77,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         try {
             Method method = this.modelClass.getMethod("tableName");
-            tableName = (String) method.invoke(this.modelClass.newInstance());
+            tableName = (String) method.invoke(this.modelClass.getDeclaredConstructor().newInstance());
         } catch (IllegalAccessException
                 | IllegalArgumentException
                 | InvocationTargetException
@@ -89,7 +89,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
     }
 
-    public AbstractRepository() {
+    protected AbstractRepository() {
         this(null);
     }
 
@@ -284,10 +284,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Override
     public Optional<M> readOne(Where where, Order order, boolean forUpdate) {
         List<M> list = read(where, order, limitFactory.create(1), forUpdate);
-        if (list.isEmpty()) {
-            return Optional.of(list.get(0));
-        }
-        return Optional.empty();
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     @Override
@@ -351,12 +348,14 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     private Long getGeneratedId(GeneratedKeyHolder holder) {
-        Map<String, Object> keys = holder.getKeys();
         String[] keyNames = new String[] {C_ID, "GENERATED_ID", "GENERATED_KEY"};
-        for (String name : keyNames) {
-            Object key = keys.get(name);
-            if (key != null) {
-                return (Long) key;
+        Map<String, Object> keys = holder.getKeys();
+        if (keys != null) {
+            for (String name : keyNames) {
+                Object key = keys.get(name);
+                if (key != null) {
+                    return (Long) key;
+                }
             }
         }
         throw new NullPointerException("Cannot get generated id with keys: " + Arrays.toString(keyNames));
