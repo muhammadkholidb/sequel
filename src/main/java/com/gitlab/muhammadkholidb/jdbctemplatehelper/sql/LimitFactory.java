@@ -23,20 +23,38 @@ public class LimitFactory {
         }
     }
 
-    public Limit create(int limit, int offset) {
+    public String getClause(Limit limit) {
+        validate(limit.getLimit());
+        String clause = null;
         if (dbProductName.contains("mysql")) {
-            return new LimitMySQL(limit, offset);
+            clause = getClauseMySQL(limit);
         } else if (dbProductName.contains("h2")) {
-            return new LimitH2(limit, offset);
+            clause = getClauseH2(limit);
         } else if (dbProductName.contains("postgresql")) {
-            return new LimitPostgreSQL(limit, offset);
+            clause = getClausePostgreSQL(limit);
         } else {
-            throw new UnsupportedOperationException(String.format("Limit implementation for product %s not found", dbProductName));
+            throw new UnsupportedOperationException(
+                    String.format("Limit implementation for product %s not found", dbProductName));
         }
+        return clause;
     }
 
-    public Limit create(int limit) {
-        return create(limit, 0);
+    private String getClauseH2(Limit limit) {
+        return String.format(" LIMIT %s OFFSET %s ", limit.getLimit(), limit.getOffset());
+    }
+
+    private String getClauseMySQL(Limit limit) {
+        return String.format(" LIMIT %s, %s ", limit.getOffset(), limit.getLimit());
+    }
+
+    private String getClausePostgreSQL(Limit limit) {
+        return String.format(" LIMIT %s OFFSET %s ", limit.getLimit(), limit.getOffset());
+    }
+
+    private void validate(int limit) {
+        if (limit < 0) {
+            throw new IllegalArgumentException("Limit should be a positive number");
+        }
     }
 
 }

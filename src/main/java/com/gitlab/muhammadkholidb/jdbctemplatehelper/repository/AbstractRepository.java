@@ -16,7 +16,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -161,7 +160,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(order.getClause());
         }
         if (limit != null) {
-            sb.append(limit.getClause());
+            sb.append(limitFactory.getClause(limit));
         }
         if (forUpdate) {
             sb.append(" FOR UPDATE "); // Set table row locking
@@ -236,7 +235,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(order.getClause());
         }
         if (limit != null) {
-            sb.append(limit.getClause());
+            sb.append(limitFactory.getClause(limit));
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
@@ -280,7 +279,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
 
     @Override
     public Optional<M> readOne(Where where, Order order, boolean forUpdate) {
-        List<M> list = read(where, order, limitFactory.create(1), forUpdate);
+        List<M> list = read(where, order, new Limit(1), forUpdate);
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
