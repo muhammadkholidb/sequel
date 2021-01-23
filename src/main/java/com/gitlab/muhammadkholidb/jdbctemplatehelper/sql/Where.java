@@ -37,7 +37,7 @@ public class Where {
         return this;
     }
 
-    public Where in(String column, Object[] values) {
+    public Where in(String column, List<?> values) {
         andIn(column, values);
         return this;
     }
@@ -94,7 +94,7 @@ public class Where {
         return this;
     }
 
-    public Where andIn(String column, Object[] values) {
+    public Where andIn(String column, List<?> values) {
         holders.add(new Holder(column, values, Condition.IN, Operator.AND));
         return this;
     }
@@ -156,7 +156,7 @@ public class Where {
         return this;
     }
 
-    public Where orIn(String column, Object[] values) {
+    public Where orIn(String column, List<?> values) {
         holders.add(new Holder(column, values, Condition.IN, Operator.OR));
         return this;
     }
@@ -198,7 +198,14 @@ public class Where {
 
     public List<Object> getValues() {
         List<Object> values = new ArrayList<>();
-        holders.forEach(holder -> values.add(holder.value));
+        holders.forEach(holder -> {
+            Object value = holder.getValue();
+            if (value instanceof List) {
+                values.addAll((List<?>) value);
+            } else {
+                values.add(value);
+            }
+        });
         return values;
     }
 
@@ -211,40 +218,45 @@ public class Where {
         sb.append(prefix);
         for (int i = 0; i < holders.size(); i++) {
             Holder holder = holders.get(i);
+            Operator operator = holder.getOperator();
+            Where where = holder.getWhere();
+            Condition condition = holder.getCondition();
+            String column = holder.getColumn();
+            Object value = holder.getValue();
             if (i > 0) {
-                sb.append(holder.operator);
+                sb.append(operator);
             }
-            switch (holder.condition) {
+            switch (condition) {
                 case WHERE:
                     sb.append(" (");
-                    sb.append(holder.getWhere().getClause().substring(prefix.length())); // remove "WHERE" inside current WHERE
+                    sb.append(where.getClause().substring(prefix.length())); // remove "WHERE" inside current WHERE
                     sb.append(") ");
                     break;
                 case EQUALS:
                     sb.append(" ");
-                    sb.append(holder.column);
+                    sb.append(column);
                     sb.append("=? ");
                     break;
                 case EQUALS_IGNORE_CASE:
                     sb.append(" LOWER(");
-                    sb.append(holder.column);
+                    sb.append(column);
                     sb.append(")=LOWER(?) ");
                     break;
                 case LIKE:
                     sb.append(" ");
-                    sb.append(holder.column);
+                    sb.append(column);
                     sb.append(" LIKE ? ");
                     break;
                 case LIKE_IGNORE_CASE:
                     sb.append(" LOWER(");
-                    sb.append(holder.column);
+                    sb.append(column);
                     sb.append(") LIKE LOWER(?) ");
                     break;
                 case IN:
                     sb.append(" ");
-                    sb.append(holder.column);
-                    sb.append("IN (");
-                    int length = ((Object[]) holder.value).length;
+                    sb.append(column);
+                    sb.append(" IN (");
+                    int length = ((List<?>) value).size();
                     for (int j = 0; j < length; j++) {
                         sb.append("?");
                         if (j < (length - 1)) {
