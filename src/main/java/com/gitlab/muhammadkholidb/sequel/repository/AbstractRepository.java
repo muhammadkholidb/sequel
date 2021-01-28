@@ -22,13 +22,13 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
 import com.gitlab.muhammadkholidb.sequel.model.DataModel;
 import com.gitlab.muhammadkholidb.sequel.sql.Limit;
 import com.gitlab.muhammadkholidb.sequel.sql.LimitFactory;
 import com.gitlab.muhammadkholidb.sequel.sql.Order;
 import com.gitlab.muhammadkholidb.sequel.sql.Where;
+import com.gitlab.muhammadkholidb.sequel.utility.SQLUtils;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,19 +140,23 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     private void printGeneratedSQL(String sql) {
-        log.trace("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SqlFormatter.format(sql) : sql);
+        log.trace("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SQLUtils.format(sql) : sql);
     }
 
     @Override
     public List<M> read(Where where, Order order, Limit limit, boolean includeDeleted, boolean forUpdate) {
+        if (where == null) {
+            where = new Where();
+        }
+        List<Object> values = where.getValues();
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM ");
         sb.append(tableName);
-        if (where != null) {
+        if (!values.isEmpty()) {
             sb.append(where.getClause());
         }
         if (!includeDeleted) {
-            sb.append(where == null ? " WHERE " : " AND ");
+            sb.append(!values.isEmpty() ? " WHERE " : " AND ");
             sb.append(C_DELETED_AT);
             sb.append(" IS NULL ");
         }
@@ -167,7 +171,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.query(sql, where == null ? new Object[] {} : where.getValues().toArray(), BeanPropertyRowMapper.newInstance(modelClass));
+        return jdbcTemplate.query(sql, values.isEmpty() ? new Object[] {} : values.toArray(), BeanPropertyRowMapper.newInstance(modelClass));
     }
 
     @Override
@@ -221,45 +225,13 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     @Override
-    public int count(Where where, Order order, Limit limit) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT COUNT(id) FROM ");
-        sb.append(tableName);
-        if (where != null) {
-            sb.append(where.getClause());
-        }
-        sb.append(where == null ? " WHERE " : " AND ");
-        sb.append(C_DELETED_AT);
-        sb.append(" IS NULL ");
-        if (order != null) {
-            sb.append(order.getClause());
-        }
-        if (limit != null) {
-            sb.append(limitFactory.getClause(limit));
-        }
-        String sql = sb.toString();
-        printGeneratedSQL(sql);
-        return jdbcTemplate.queryForObject(sql, where == null ? new Object[] {} : where.getValues().toArray(), Integer.class);
-    }
-
-    @Override
-    public int count(Where where) {
-        return count(where, null, null);
-    }
-
-    @Override
-    public int count() {
-        return count(null);
-    }
-
-    @Override
     public Optional<M> readOne(Long id) {
         return readOne(new Where().equals(C_ID, id), false);
     }
 
     @Override
-    public Optional<M> readOne(Long id, boolean forUpdate) {
-        return readOne(new Where().equals(C_ID, id), forUpdate);
+    public Optional<M> readOne(Long id, boolean includeDeleted) {
+        return readOne(new Where().equals(C_ID, id), includeDeleted);
     }
 
     @Override
@@ -268,8 +240,8 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     @Override
-    public Optional<M> readOne(Where where, boolean forUpdate) {
-        return readOne(where, null, forUpdate);
+    public Optional<M> readOne(Where where, boolean includeDeleted) {
+        return readOne(where, null, includeDeleted);
     }
 
     @Override
@@ -278,9 +250,67 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     @Override
-    public Optional<M> readOne(Where where, Order order, boolean forUpdate) {
-        List<M> list = read(where, order, new Limit(1), forUpdate);
+    public Optional<M> readOne(Where where, Order order, boolean includeDeleted) {
+        return readOne(where, order, includeDeleted, false);
+    }
+
+    @Override
+    public Optional<M> readOne(Where where, Order order, boolean includeDeleted, boolean forUpdate) {
+        List<M> list = read(where, order, new Limit(1), includeDeleted, forUpdate);
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public Optional<M> readOneForUpdate(Long id) {
+        return readOneForUpdate(new Where().equals(C_ID, id));
+    }
+
+    @Override
+    public Optional<M> readOneForUpdate(Where where) {
+        return readOneForUpdate(where, null);
+    }
+
+    @Override
+    public Optional<M> readOneForUpdate(Where where, Order order) {
+        return readOneForUpdate(where, order, false);
+    }
+
+    @Override
+    public Optional<M> readOneForUpdate(Where where, Order order, boolean includeDeleted) {
+         List<M> list = readForUpdate(where, order, new Limit(1), includeDeleted);
+         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
+    }
+
+    @Override
+    public int count(Where where, boolean includeDeleted) {
+        if (where == null) {
+            where = new Where();
+        }
+        List<Object> values = where.getValues();
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT COUNT(id) FROM ");
+        sb.append(tableName);
+        if (!values.isEmpty()) {
+            sb.append(where.getClause());
+        }
+        if (!includeDeleted) {
+            sb.append(!values.isEmpty() ? " WHERE " : " AND ");
+            sb.append(C_DELETED_AT);
+            sb.append(" IS NULL ");
+        }
+        String sql = sb.toString();
+        printGeneratedSQL(sql);
+        return jdbcTemplate.queryForObject(sql, values.isEmpty() ? new Object[] {} : values.toArray(), Integer.class);
+    }
+
+    @Override
+    public int count(Where where) {
+        return count(where, false);
+    }
+
+    @Override
+    public int count() {
+        return count(null);
     }
 
     @Override

@@ -6,9 +6,9 @@ import com.github.vertical_blank.sqlformatter.SqlFormatter;
 
 import org.springframework.util.CollectionUtils;
 
-public class SQLFormatter {
+public class SQLUtils {
 
-    private SQLFormatter() {
+    private SQLUtils() {
     }
 
     public static String format(String sql, List<?> params) {

@@ -73,15 +73,25 @@ public interface CommonRepository<M extends DataModel> {
 
     Optional<M> readOne(Long id);
 
-    Optional<M> readOne(Long id, boolean forUpdate);
+    Optional<M> readOne(Long id, boolean includeDeleted);
 
     Optional<M> readOne(Where where);
 
-    Optional<M> readOne(Where where, boolean forUpdate);
+    Optional<M> readOne(Where where, boolean includeDeleted);
 
     Optional<M> readOne(Where where, Order order);
 
-    Optional<M> readOne(Where where, Order order, boolean forUpdate);
+    Optional<M> readOne(Where where, Order order, boolean includeDeleted);
+
+    Optional<M> readOne(Where where, Order order, boolean includeDeleted, boolean forUpdate);
+
+    Optional<M> readOneForUpdate(Where where, Order order, boolean includeDeleted);
+
+    Optional<M> readOneForUpdate(Where where, Order order);
+
+    Optional<M> readOneForUpdate(Where where);
+
+    Optional<M> readOneForUpdate(Long id);
 
     Integer update(M model);
 
@@ -101,7 +111,7 @@ public interface CommonRepository<M extends DataModel> {
 
     Integer delete(Long id, boolean force);
 
-    int count(Where where, Order order, Limit limit);
+    int count(Where where, boolean includeDeleted);
 
     int count(Where where);
 
