@@ -156,7 +156,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(where.getClause());
         }
         if (!includeDeleted) {
-            sb.append(!values.isEmpty() ? " WHERE " : " AND ");
+            sb.append(values.isEmpty() ? " WHERE " : " AND ");
             sb.append(C_DELETED_AT);
             sb.append(" IS NULL ");
         }
@@ -294,7 +294,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(where.getClause());
         }
         if (!includeDeleted) {
-            sb.append(!values.isEmpty() ? " WHERE " : " AND ");
+            sb.append(values.isEmpty() ? " WHERE " : " AND ");
             sb.append(C_DELETED_AT);
             sb.append(" IS NULL ");
         }
