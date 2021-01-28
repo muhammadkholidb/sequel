@@ -1,9 +1,9 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.repository;
+package com.gitlab.muhammadkholidb.sequel.repository;
 
-import static com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel.C_CREATED_AT;
-import static com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel.C_DELETED_AT;
-import static com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel.C_ID;
-import static com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel.C_UPDATED_AT;
+import static com.gitlab.muhammadkholidb.sequel.model.DataModel.C_CREATED_AT;
+import static com.gitlab.muhammadkholidb.sequel.model.DataModel.C_DELETED_AT;
+import static com.gitlab.muhammadkholidb.sequel.model.DataModel.C_ID;
+import static com.gitlab.muhammadkholidb.sequel.model.DataModel.C_UPDATED_AT;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -23,12 +23,12 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import com.github.vertical_blank.sqlformatter.SqlFormatter;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.annotation.DataColumn;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Limit;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.LimitFactory;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Order;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Where;
+import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
+import com.gitlab.muhammadkholidb.sequel.model.DataModel;
+import com.gitlab.muhammadkholidb.sequel.sql.Limit;
+import com.gitlab.muhammadkholidb.sequel.sql.LimitFactory;
+import com.gitlab.muhammadkholidb.sequel.sql.Order;
+import com.gitlab.muhammadkholidb.sequel.sql.Where;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;

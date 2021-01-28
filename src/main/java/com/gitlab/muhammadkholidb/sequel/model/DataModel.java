@@ -1,8 +1,8 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.model;
+package com.gitlab.muhammadkholidb.sequel.model;
 
 import java.sql.Timestamp;
 
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.annotation.DataColumn;
+import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
 
 import lombok.Data;
 

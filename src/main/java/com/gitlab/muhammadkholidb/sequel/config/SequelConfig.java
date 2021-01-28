@@ -1,10 +1,10 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.config;
+package com.gitlab.muhammadkholidb.sequel.config;
 
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.LimitFactory;
+import com.gitlab.muhammadkholidb.sequel.sql.LimitFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Configuration
-public class JdbcTemplateHelperConfig {
+public class SequelConfig {
     
     @Autowired
     private DataSource dataSource;

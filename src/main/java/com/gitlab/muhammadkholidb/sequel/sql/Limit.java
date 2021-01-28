@@ -1,4 +1,4 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.sql;
+package com.gitlab.muhammadkholidb.sequel.sql;
 
 import lombok.Data;
 

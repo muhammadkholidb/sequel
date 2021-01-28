@@ -1,12 +1,12 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.repository;
+package com.gitlab.muhammadkholidb.sequel.repository;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.model.DataModel;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Limit;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Order;
-import com.gitlab.muhammadkholidb.jdbctemplatehelper.sql.Where;
+import com.gitlab.muhammadkholidb.sequel.model.DataModel;
+import com.gitlab.muhammadkholidb.sequel.sql.Limit;
+import com.gitlab.muhammadkholidb.sequel.sql.Order;
+import com.gitlab.muhammadkholidb.sequel.sql.Where;
 
 /**
  * 

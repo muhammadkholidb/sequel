@@ -1,4 +1,4 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.sql;
+package com.gitlab.muhammadkholidb.sequel.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;

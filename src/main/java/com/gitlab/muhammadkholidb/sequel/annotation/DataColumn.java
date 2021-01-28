@@ -1,4 +1,4 @@
-package com.gitlab.muhammadkholidb.jdbctemplatehelper.annotation;
+package com.gitlab.muhammadkholidb.sequel.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
