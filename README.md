@@ -1,3 +1,3 @@
-# JDBC Template Helper
+# Sequel
 
 SQL helpers for Spring's JDBCTemplate
