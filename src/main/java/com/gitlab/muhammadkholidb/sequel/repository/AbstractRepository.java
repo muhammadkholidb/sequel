@@ -542,4 +542,14 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         return delete(model.getId(), force);
     }
 
+    @Override
+    public Integer delete(List<Long> ids, boolean force) {
+        return delete(new Where().in(C_ID, ids), force);
+    }
+
+    @Override
+    public Integer delete(List<Long> ids) {
+        return delete(ids, false);
+    }
+
 }

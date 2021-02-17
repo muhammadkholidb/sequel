@@ -111,6 +111,10 @@ public interface CommonRepository<M extends DataModel> {
 
     Integer delete(Long id, boolean force);
 
+    Integer delete(List<Long> ids);
+
+    Integer delete(List<Long> ids, boolean force);
+
     int count(Where where, boolean includeDeleted);
 
     int count(Where where);
