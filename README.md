@@ -133,6 +133,6 @@ public void deleteProductByCode(String code) {
 }
 ```
 
-By default Sequel will do a soft delete by setting value to column `deleted_at`. There are always methods to do a hard delete by providing the `true` for the `force` param of `delete()` method. 
+By default, Sequel will do a soft delete by setting the value to column `deleted_at`. There are always methods to do a hard delete by providing `true` value to the `force` param of `delete()` method. 
 
-The same thing is also applied for `read()` / `readOne()` methods. They will return data which is not softly deleted (`deleted_at` is null). You can also include the deleted data by providing the `true` for the `includeDeleted` param of `read()` / `readOne()` methods.
+The same is also applied for `read()` / `readOne()` methods. They will return data that is not softly deleted (with column `deleted_at` is null). You can also include the deleted data by providing `true` value to the `includeDeleted` param of `read()` / `readOne()` methods.
