@@ -39,7 +39,7 @@ public class ApplicationConfig {
 }
 ```
 
-#### 4. Extend the `DataModel` to your data models.
+#### 4. Extend the `DataModel` to your data model classes
 This `DataModel` will provide the getters and setters for `id`, `createdAt`, `updatedAt`, `deletedAt` fields representing columns `id`, `created_at`, `updated_at`, `deleted_at`, which are required by Sequel to run. Make sure your tables are already have those columns. Use `@DataColumn` to set other column names to your model fields.
 ```java
 ...
@@ -84,6 +84,7 @@ public interface ProductRepository extends CommonRepository<Product> {
 ...
 import com.gitlab.muhammadkholidb.sequel.repository.AbstractRepository;
 
+@Repository
 public class ProductRepositoryImpl extends AbstractRepository<Product> implements ProductRepository {
 
 }
