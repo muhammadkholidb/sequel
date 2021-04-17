@@ -3,8 +3,9 @@
 SQL helpers for Spring's JDBCTemplate
 
 
-Easy steps to use Sequel:
-#### 1. Add maven repository
+#### How to Use
+1. Add maven repository
+
 ```xml
 <repositories>
     <repository>
@@ -14,7 +15,8 @@ Easy steps to use Sequel:
 </repositories>
 ```
 
-#### 2. Add this project as maven dependency
+2. Add this project as maven dependency
+
 ```xml
 <dependency>
     <groupId>com.gitlab.muhammadkholidb</groupId>
@@ -23,7 +25,8 @@ Easy steps to use Sequel:
 </dependency>
 ```
 
-#### 3. Import `SequelConfig` to your configuration with DataSource
+3. Import `SequelConfig` to your configuration with DataSource
+
 ```java
 ...
 import com.gitlab.muhammadkholidb.sequel.config.SequelConfig;
@@ -39,8 +42,9 @@ public class ApplicationConfig {
 }
 ```
 
-#### 4. Extend the `DataModel` to your data model classes
-This `DataModel` will provide the getters and setters for `id`, `createdAt`, `updatedAt`, `deletedAt` fields representing columns `id`, `created_at`, `updated_at`, `deleted_at`, which are required by Sequel to run. Make sure your tables are already have those columns. Use `@DataColumn` to set other column names to your model fields.
+4. Extend the `DataModel` to your data model classes.
+
+
 ```java
 ...
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
@@ -72,7 +76,11 @@ public class Product extends DataModel {
 }
 ```
 
-#### 4. Extend the `CommonRepository` and `AbstractRepository` to your repository classes
+This `DataModel` will provide the getters and setters for `id`, `createdAt`, `updatedAt`, `deletedAt` fields representing columns `id`, `created_at`, `updated_at`, `deleted_at`, which are required by Sequel to run.Make sure your tables are already have those columns. Use `@DataColumn` to set other column names to your model fields.
+
+
+5. Extend the `CommonRepository` and `AbstractRepository` to your repository classes
+
 ```java
 ...
 import com.gitlab.muhammadkholidb.sequel.repository.CommonRepository;
@@ -90,7 +98,8 @@ public class ProductRepositoryImpl extends AbstractRepository<Product> implement
 }
 ```
 
-#### 5. Use Sequel methods to query your database
+6. Use Sequel methods to query your database
+
 ```java
 ...
 import com.gitlab.muhammadkholidb.sequel.sql.Where;
@@ -134,6 +143,6 @@ public void deleteProductByCode(String code) {
 }
 ```
 
-By default, Sequel will do a soft delete by setting the value to column `deleted_at`. There are always methods to do a hard delete by providing `true` value to the `force` param of `delete()` method. 
+By default, Sequel will do a soft delete by setting the value to column `deleted_at`. There are always methods to do a hard delete by providing `true` value to the `force` param of the `delete()` method. 
 
 The same is also applied for `read()` / `readOne()` methods. They will return data that is not softly deleted (with column `deleted_at` is null). You can also include the deleted data by providing `true` value to the `includeDeleted` param of `read()` / `readOne()` methods.
