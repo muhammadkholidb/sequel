@@ -1,10 +1,13 @@
+<a href="https://gitlab.com/muhammadkholidb/sequel/-/pipelines" target="_blank"><img alt="pipeline status" src="https://gitlab.com/muhammadkholidb/sequel/badges/master/pipeline.svg" /></a> 
+<a href="https://gitlab.com/muhammadkholidb/sequel/-/jobs" target="_blank"><img alt="coverage report" src="https://gitlab.com/muhammadkholidb/sequel/badges/master/coverage.svg" /></a> 
+
 # Sequel
 
 SQL helpers for Spring's JDBCTemplate
 
 
 #### How to Use
-1. Add maven repository
+1. Add JitPack maven repository
 
 ```xml
 <repositories>
@@ -42,7 +45,7 @@ public class ApplicationConfig {
 }
 ```
 
-4. Extend the `DataModel` to your data model classes.
+4. Extend the `DataModel` to your data model classes
 
 
 ```java
@@ -76,7 +79,7 @@ public class Product extends DataModel {
 }
 ```
 
-This `DataModel` will provide the getters and setters for `id`, `createdAt`, `updatedAt`, `deletedAt` fields representing columns `id`, `created_at`, `updated_at`, `deleted_at`, which are required by Sequel to run.Make sure your tables are already have those columns. Use `@DataColumn` to set other column names to your model fields.
+This `DataModel` will provide the getters and setters for `id`, `createdAt`, `updatedAt`, `deletedAt` fields representing columns `id`, `created_at`, `updated_at`, `deleted_at`, which are required by Sequel to run. Make sure your tables already have those columns. Use `@DataColumn` to set other column names to your model fields.
 
 
 5. Extend the `CommonRepository` and `AbstractRepository` to your repository classes
