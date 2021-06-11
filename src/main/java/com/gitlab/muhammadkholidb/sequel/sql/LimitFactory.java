@@ -5,6 +5,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -26,7 +28,7 @@ public class LimitFactory {
     public String getClause(Limit limit) {
         validate(limit.getLimit());
         String clause = null;
-        if (dbProductName.contains("mysql")) {
+        if (StringUtils.containsAny(dbProductName, "mysql", "mariadb")) {
             clause = getClauseMySQL(limit);
         } else if (dbProductName.contains("h2")) {
             clause = getClauseH2(limit);

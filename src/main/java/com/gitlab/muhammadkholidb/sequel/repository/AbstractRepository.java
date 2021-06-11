@@ -364,13 +364,13 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         printGeneratedSQL(sql);
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
             for (int i = 0; i < listValues.size(); i++) {
                 ps.setObject(i + 1, listValues.get(i));
             }
             return ps;
         }, holder);
-        return getGeneratedId(holder);
+        return holder.getKey().longValue();
     }
 
     private Long getGeneratedId(GeneratedKeyHolder holder) {
