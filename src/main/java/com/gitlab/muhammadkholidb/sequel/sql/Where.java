@@ -20,113 +20,107 @@ public class Where {
     }
 
     public Where equals(String column, Object value) {
-        andEquals(column, value);
-        return this;
+        return andEquals(column, value);
     }
 
     public Where notEquals(String column, Object value) {
-        andNotEquals(column, value);
-        return this;
+        return andNotEquals(column, value);
     }
 
     public Where equalsIgnoreCase(String column, Object value) {
-        andEqualsIgnoreCase(column, value);
-        return this;
+        return andEqualsIgnoreCase(column, value);
     }
 
     public Where notEqualsIgnoreCase(String column, Object value) {
-        andNotEqualsIgnoreCase(column, value);
-        return this;
+        return andNotEqualsIgnoreCase(column, value);
     }
 
     public Where like(String column, Object value) {
-        andLike(column, value);
-        return this;
+        return andLike(column, value);
     }
 
     public Where notLike(String column, Object value) {
-        andNotLike(column, value);
-        return this;
+        return andNotLike(column, value);
     }
 
     public Where likeIgnoreCase(String column, Object value) {
-        andLikeIgnoreCase(column, value);
-        return this;
+        return andLikeIgnoreCase(column, value);
     }
 
     public Where notLikeIgnoreCase(String column, Object value) {
-        andNotLikeIgnoreCase(column, value);
-        return this;
+        return andNotLikeIgnoreCase(column, value);
     }
 
     public Where in(String column, List<?> values) {
-        andIn(column, values);
-        return this;
+        return andIn(column, values);
     }
 
     public Where notIn(String column, List<?> values) {
-        andNotIn(column, values);
-        return this;
+        return andNotIn(column, values);
     }
 
     public Where contains(String column, Object value) {
-        andContains(column, value);
-        return this;
+        return andContains(column, value);
     }
 
     public Where notContains(String column, Object value) {
-        andNotContains(column, value);
-        return this;
+        return andNotContains(column, value);
     }
 
     public Where containsIgnoreCase(String column, Object value) {
-        andContainsIgnoreCase(column, value);
-        return this;
+        return andContainsIgnoreCase(column, value);
     }
 
     public Where notContainsIgnoreCase(String column, Object value) {
-        andNotContainsIgnoreCase(column, value);
-        return this;
+        return andNotContainsIgnoreCase(column, value);
     }
 
     public Where startsWith(String column, Object value) {
-        andStartsWith(column, value);
-        return this;
+        return andStartsWith(column, value);
     }
 
     public Where notStartsWith(String column, Object value) {
-        andNotStartsWith(column, value);
-        return this;
+        return andNotStartsWith(column, value);
     }
 
     public Where startsWithIgnoreCase(String column, Object value) {
-        andStartsWithIgnoreCase(column, value);
-        return this;
+        return andStartsWithIgnoreCase(column, value);
     }
 
     public Where notStartsWithIgnoreCase(String column, Object value) {
-        andNotStartsWithIgnoreCase(column, value);
-        return this;
+        return andNotStartsWithIgnoreCase(column, value);
     }
 
     public Where endsWith(String column, Object value) {
-        andEndsWith(column, value);
-        return this;
+        return andEndsWith(column, value);
     }
 
     public Where notEndsWith(String column, Object value) {
-        andNotEndsWith(column, value);
-        return this;
+        return andNotEndsWith(column, value);
     }
 
     public Where endsWithIgnoreCase(String column, Object value) {
-        andEndsWithIgnoreCase(column, value);
-        return this;
+        return andEndsWithIgnoreCase(column, value);
     }
 
     public Where notEndsWithIgnoreCase(String column, Object value) {
-        andNotEndsWithIgnoreCase(column, value);
-        return this;
+        return andNotEndsWithIgnoreCase(column, value);
+    }
+
+    public Where greaterThan(String column, Object value) {
+        return andGreaterThan(column, value);
+    }
+
+    public Where greaterThanOrEqual(String column, Object value) {
+        return andGreaterThanOrEqual(column, value);
+    }
+
+    public Where lowerThan(String column, Object value) {
+        return andLowerThan(column, value);
+    }
+
+    public Where lowerThanOrEqual(String column, Object value) {
+        return andLowerThanOrEqual(column, value);
     }
 
     // AND
@@ -238,6 +232,26 @@ public class Where {
 
     public Where andNotEndsWithIgnoreCase(String column, Object value) {
         andNotLikeIgnoreCase(column, "%" + value);
+        return this;
+    }
+
+    public Where andGreaterThan(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.GREATER_THAN, Operator.AND));
+        return this;
+    }
+
+    public Where andGreaterThanOrEqual(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.GREATER_THAN_OR_EQUAL, Operator.AND));
+        return this;
+    }
+
+    public Where andLowerThan(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.LOWER_THAN, Operator.AND));
+        return this;
+    }
+
+    public Where andLowerThanOrEqual(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.LOWER_THAN_OR_EQUAL, Operator.AND));
         return this;
     }
 
@@ -358,6 +372,26 @@ public class Where {
         return this;
     }
 
+    public Where orGreaterThan(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.GREATER_THAN, Operator.OR));
+        return this;
+    }
+
+    public Where orGreaterThanOrEqual(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.GREATER_THAN_OR_EQUAL, Operator.OR));
+        return this;
+    }
+
+    public Where orLowerThan(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.LOWER_THAN, Operator.OR));
+        return this;
+    }
+
+    public Where orLowerThanOrEqual(String column, Object value) {
+        holders.add(new Holder(column, value, Condition.LOWER_THAN_OR_EQUAL, Operator.OR));
+        return this;
+    }
+
     public Where or(Where where) {
         holders.add(new Holder(where, Operator.OR));
         return this;
@@ -432,6 +466,26 @@ public class Where {
                     }
                     sb.append(") ");
                     break;
+                case GREATER_THAN:
+                    sb.append(" ");
+                    sb.append(column);
+                    sb.append(" > ? ");
+                    break;
+                case GREATER_THAN_OR_EQUAL:
+                    sb.append(" ");
+                    sb.append(column);
+                    sb.append(" >= ? ");
+                    break;
+                case LOWER_THAN:
+                    sb.append(" ");
+                    sb.append(column);
+                    sb.append(" < ? ");
+                    break;
+                case LOWER_THAN_OR_EQUAL:
+                    sb.append(" ");
+                    sb.append(column);
+                    sb.append(" <= ? ");
+                    break;
             }
         }
         return sb.toString();
@@ -441,9 +495,20 @@ public class Where {
         return condition ? strIfTrue : strIfFalse;
     }
 
+    // @formatter:off
     private enum Condition {
-        WHERE, EQUALS, EQUALS_IGNORE_CASE, LIKE, LIKE_IGNORE_CASE, IN
+        WHERE, 
+        EQUALS, 
+        EQUALS_IGNORE_CASE, 
+        LIKE, 
+        LIKE_IGNORE_CASE, 
+        IN, 
+        GREATER_THAN, 
+        GREATER_THAN_OR_EQUAL, 
+        LOWER_THAN, 
+        LOWER_THAN_OR_EQUAL
     }
+    // @formatter:on
 
     private enum Operator {
         AND, OR
