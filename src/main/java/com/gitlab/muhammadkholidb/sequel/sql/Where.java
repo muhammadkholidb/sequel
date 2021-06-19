@@ -123,6 +123,14 @@ public class Where {
         return andLowerThanOrEqual(column, value);
     }
 
+    public Where isNull(String column) {
+        return andIsNull(column);
+    }
+
+    public Where isNotNull(String column) {
+        return andIsNotNull(column);
+    }
+
     // AND
 
     public Where andEquals(String column, Object value) {
@@ -252,6 +260,16 @@ public class Where {
 
     public Where andLowerThanOrEqual(String column, Object value) {
         holders.add(new Holder(column, value, Condition.LOWER_THAN_OR_EQUAL, Operator.AND));
+        return this;
+    }
+
+    public Where andIsNull(String column) {
+        holders.add(new Holder(column, null, Condition.NULL, Operator.AND));
+        return this;
+    }
+
+    public Where andIsNotNull(String column) {
+        holders.add(new Holder(column, null, Condition.NULL, Operator.AND, true));
         return this;
     }
 
@@ -392,6 +410,16 @@ public class Where {
         return this;
     }
 
+    public Where orIsNull(String column) {
+        holders.add(new Holder(column, null, Condition.NULL, Operator.OR));
+        return this;
+    }
+
+    public Where orIsNotNull(String column) {
+        holders.add(new Holder(column, null, Condition.NULL, Operator.OR, true));
+        return this;
+    }
+
     public Where or(Where where) {
         holders.add(new Holder(where, Operator.OR));
         return this;
@@ -401,6 +429,9 @@ public class Where {
         List<Object> values = new ArrayList<>();
         holders.forEach(holder -> {
             Object value = holder.getValue();
+            if (value == null) {
+                return;
+            }
             if (value instanceof List) {
                 values.addAll((List<?>) value);
             } else {
@@ -486,6 +517,11 @@ public class Where {
                     sb.append(column);
                     sb.append(" <= ? ");
                     break;
+                case NULL:
+                    sb.append(" ");
+                    sb.append(column);
+                    sb.append(conditionalString(!negated, " IS NULL ", " IS NOT NULL "));
+                    break;
             }
         }
         return sb.toString();
@@ -506,7 +542,8 @@ public class Where {
         GREATER_THAN, 
         GREATER_THAN_OR_EQUAL, 
         LOWER_THAN, 
-        LOWER_THAN_OR_EQUAL
+        LOWER_THAN_OR_EQUAL,
+        NULL
     }
     // @formatter:on
 
