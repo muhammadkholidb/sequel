@@ -19,4 +19,16 @@ public class SQLUtils {
         return format(sql, null);
     }
 
+    public static String likeValueContains(String text) {
+        return "%" + text + "%";
+    }
+
+    public static String likeValueStartsWith(String text) {
+        return text + "%";
+    }
+
+    public static String likeValueEndsWith(String text) {
+        return "%" + text;
+    }
+
 }
