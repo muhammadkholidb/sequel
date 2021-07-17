@@ -2,6 +2,7 @@ package com.gitlab.muhammadkholidb.sequel.sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import lombok.Data;
 
@@ -442,6 +443,10 @@ public class Where {
     }
 
     public String getClause() {
+        return getClause(col -> col);
+    }
+
+    public String getClause(UnaryOperator<String> fnColumn) {
         if (holders.isEmpty()) {
             return "";
         }
@@ -452,7 +457,7 @@ public class Where {
             Operator operator = holder.getOperator();
             Where where = holder.getWhere();
             Condition condition = holder.getCondition();
-            String column = holder.getColumn();
+            String column = fnColumn.apply(holder.getColumn());
             Object value = holder.getValue();
             boolean negated = Boolean.TRUE.equals(holder.getNegated());
             if (i > 0) {

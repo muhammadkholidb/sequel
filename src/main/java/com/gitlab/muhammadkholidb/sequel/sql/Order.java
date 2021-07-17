@@ -2,6 +2,7 @@ package com.gitlab.muhammadkholidb.sequel.sql;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 /**
  *
@@ -28,12 +29,16 @@ public class Order {
     }
 
     public String getClause() {
+        return getClause(col -> col);
+    }
+
+    public String getClause(UnaryOperator<String> fnColumn) {
         if (map != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(" ORDER BY ");
             int i = 0;
             for (Map.Entry<String, Direction> entry : map.entrySet()) {
-                sb.append(entry.getKey());
+                sb.append(fnColumn.apply(entry.getKey()));
                 sb.append(" ");
                 sb.append(entry.getValue().abbr());
                 i++;

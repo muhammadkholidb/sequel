@@ -4,15 +4,15 @@ import lombok.Data;
 
 @Data
 public class Limit {
-    private int limit;
-    private int offset;
+    private Integer value;
+    private Integer offset;
 
-    public Limit(int limit, int offset) {
-        this.limit = limit;
+    public Limit(Integer value, Integer offset) {
+        this.value = value;
         this.offset = offset;
     }
 
-    public Limit(int limit) {
-        this(limit, 0);
+    public Limit(Integer value) {
+        this(value, null);
     }
 }

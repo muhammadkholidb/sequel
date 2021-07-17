@@ -1,10 +1,5 @@
 package com.gitlab.muhammadkholidb.sequel.sql;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,45 +11,49 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LimitFactory {
 
-    private final String dbProductName;
+    private final String productName;
 
-    public LimitFactory(DataSource dataSource) throws SQLException {
-        try (Connection conn = dataSource.getConnection()) {
-            dbProductName = conn.getMetaData().getDatabaseProductName().toLowerCase();
-            log.info("Database product name: {}", dbProductName);
-        }
+    public LimitFactory(String productName) {
+        log.info("Database product name: {}", productName);
+        this.productName = productName.toLowerCase();
     }
 
     public String getClause(Limit limit) {
-        validate(limit.getLimit());
+        validateLimit(limit.getValue());
         String clause = null;
-        if (StringUtils.containsAny(dbProductName, "mysql", "mariadb")) {
+        if (StringUtils.containsAny(productName, "mysql", "mariadb")) {
             clause = getClauseMySQL(limit);
-        } else if (dbProductName.contains("h2")) {
+        } else if (productName.contains("h2")) {
             clause = getClauseH2(limit);
-        } else if (dbProductName.contains("postgresql")) {
+        } else if (productName.contains("postgresql")) {
             clause = getClausePostgreSQL(limit);
         } else {
             throw new UnsupportedOperationException(
-                    String.format("Limit implementation for product %s not found", dbProductName));
+                    String.format("Limit implementation for product %s not found", productName));
         }
         return clause;
     }
 
-    private String getClauseH2(Limit limit) {
-        return String.format(" LIMIT %s OFFSET %s ", limit.getLimit(), limit.getOffset());
-    }
-
     private String getClauseMySQL(Limit limit) {
-        return String.format(" LIMIT %s, %s ", limit.getOffset(), limit.getLimit());
+        if (limit.getOffset() == null) {
+            return String.format(" LIMIT %s ", limit.getValue());
+        }
+        return String.format(" LIMIT %s, %s ", limit.getOffset(), limit.getValue());
     }
 
     private String getClausePostgreSQL(Limit limit) {
-        return String.format(" LIMIT %s OFFSET %s ", limit.getLimit(), limit.getOffset());
+        if (limit.getOffset() == null) {
+            return String.format(" LIMIT %s ", limit.getValue());
+        }
+        return String.format(" LIMIT %s OFFSET %s ", limit.getValue(), limit.getOffset());
     }
 
-    private void validate(int limit) {
-        if (limit < 0) {
+    private String getClauseH2(Limit limit) {
+        return getClausePostgreSQL(limit);
+    }
+
+    private void validateLimit(Integer value) {
+        if (value == null || value < 0) {
             throw new IllegalArgumentException("Limit should be a positive number");
         }
     }
