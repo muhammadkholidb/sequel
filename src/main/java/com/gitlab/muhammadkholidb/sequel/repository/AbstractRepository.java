@@ -141,7 +141,18 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     protected String quoteIfReserved(String word) {
-        return isReserved(word) ? sqlQuoteString + word + sqlQuoteString : word;
+        return isReserved(word) ? quote(word) : word;
+    }
+
+    /**
+     * Quote the word with database specific quote string. Might be quoted by empty
+     * string if no quote string spcified by the database.
+     * 
+     * @param word the word to be quoted with
+     * @return the quoted word
+     */
+    protected String quote(String word) {
+        return sqlQuoteString + word + sqlQuoteString;
     }
 
     @Override
