@@ -328,6 +328,18 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
         assertThat(result, is(4));
     }
 
+    @Test
+    public void testExists_shouldSucceed() {
+        boolean result = tableRepository.exists(4l);
+        assertThat(result, is(false));
+    }
+
+    @Test
+    public void testExists_where_shouldSucceed() {
+        boolean result = tableRepository.exists(new Where().equals("number", 300));
+        assertThat(result, is(true));
+    }
+
     private Matcher<Table> getTableMatchers(long id, int num, String code, boolean isDeleted) {
         return allOf(
                     hasProperty("id", is(id)), 
