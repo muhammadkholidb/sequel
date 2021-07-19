@@ -282,6 +282,34 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
         assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
     }
 
+    @Test
+    public void testReadOneForUpdate_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOneForUpdate(4l);
+        assertThat(result.isEmpty(), is(true));
+    }
+
+    @Test
+    public void testReadOneForUpdate_where_shouldSucceed() {
+        Optional<Table> result = tableRepository
+                .readOneForUpdate(new Where().equals("number", 100).andEqualsIgnoreCase("code", "T100"));
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(1, 100, "T100", false));
+    }
+
+    @Test
+    public void testReadOneForUpdate_where_order_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOneForUpdate(new Where().greaterThan("id", "1"), new Order().by("number", Direction.DESCENDING));
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+    }
+
+    @Test
+    public void testReadOneForUpdate_where_order_includeDeleted_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOneForUpdate(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+    }
+
     private Matcher<Table> getTableMatchers(long id, int num, String code, boolean isDeleted) {
         return allOf(
                     hasProperty("id", is(id)), 
