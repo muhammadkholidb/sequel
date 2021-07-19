@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
@@ -229,6 +230,56 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
                     getTableMatchers(2, 200, "T200", false),
                     getTableMatchers(3, 300, "T300", false),
                     getTableMatchers(4, 300, "T300", true)));
+    }
+
+    @Test
+    public void testReadOne_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOne(4l);
+        assertThat(result.isEmpty(), is(true));
+    }
+
+    @Test
+    public void testReadOne_includeDeleted_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOne(4l, true);
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(4, 300, "T300", true));
+    }
+
+    @Test
+    public void testReadOne_where_shouldSucceed() {
+        Optional<Table> result = tableRepository
+                .readOne(new Where().equals("number", 100).andEqualsIgnoreCase("code", "T100"));
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(1, 100, "T100", false));
+    }
+
+    @Test
+    public void testReadOne_where_order_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOne(new Where().greaterThan("id", "1"), new Order().by("number", Direction.DESCENDING));
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+    }
+
+    @Test
+    public void testReadOne_where_order_includeDeleted_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+    }
+
+    @Test
+    public void testReadOne_where_order_includeDeleted_forUpdate_shouldSucceed() {
+        Optional<Table> result = tableRepository.readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true, true);
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+    }
+
+    @Test
+    public void testReadOne_where_includeDeleted_shouldSucceed() {
+        Optional<Table> result = tableRepository
+                .readOne(new Where().equals("number", 300).andEqualsIgnoreCase("code", "T300"), true);
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
     }
 
     private Matcher<Table> getTableMatchers(long id, int num, String code, boolean isDeleted) {
