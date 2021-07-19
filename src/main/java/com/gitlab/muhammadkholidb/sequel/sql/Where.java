@@ -466,7 +466,7 @@ public class Where {
             switch (condition) {
                 case WHERE:
                     sb.append(" (");
-                    sb.append(where.getClause().substring(PREFIX.length())); // remove " WHERE " inside current WHERE
+                    sb.append(where.getClause(fnColumn).substring(PREFIX.length())); // remove " WHERE " inside current WHERE
                     sb.append(") ");
                     break;
                 case EQUALS:
