@@ -310,6 +310,24 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
         assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
     }
 
+    @Test
+    public void testCount_shouldSucceed() {
+        int result = tableRepository.count();
+        assertThat(result, is(3));
+    }
+
+    @Test
+    public void testCount_where_shouldSucceed() {
+        int result = tableRepository.count(new Where().notEquals("code", "T200"));
+        assertThat(result, is(2));
+    }
+
+    @Test
+    public void testCount_where_includeDeleted_shouldSucceed() {
+        int result = tableRepository.count(new Where(), true);
+        assertThat(result, is(4));
+    }
+
     private Matcher<Table> getTableMatchers(long id, int num, String code, boolean isDeleted) {
         return allOf(
                     hasProperty("id", is(id)), 
