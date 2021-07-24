@@ -1,6 +1,6 @@
 package com.gitlab.muhammadkholidb.sequel.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
 
@@ -22,13 +22,13 @@ public abstract class DataModel {
     private Long id;
     
     @DataColumn(C_CREATED_AT)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     
     @DataColumn(C_UPDATED_AT)
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
     
     @DataColumn(C_DELETED_AT)
-    private Timestamp deletedAt;
+    private LocalDateTime deletedAt;
 
     public abstract String tableName();
 
