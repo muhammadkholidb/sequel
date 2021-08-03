@@ -30,7 +30,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @DataSet("table.yml")
-public class AbstractRepositoryTest extends BaseRepositoryTest {
+public class AbstractRepositoryTest extends RepositoryTestBase {
 
     @Autowired
     private TableRepository tableRepository;
@@ -73,7 +73,7 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testRead_where_order_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().greaterThan("id", "1"), new Order().by("number", Direction.DESCENDING));
+        List<Table> result = tableRepository.read(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
@@ -83,14 +83,14 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testRead_where_order_limit_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().lowerThan("id", "3"), new Order().by("number", Direction.DESCENDING), new Limit(1, 1));
+        List<Table> result = tableRepository.read(new Where().lowerThan("id", 3), new Order().by("number", Direction.DESCENDING), new Limit(1, 1));
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
     }
 
     @Test
     public void testRead_where_order_limit_includeDeleted_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().greaterThanOrEqual("id", "3"), new Order().by("id", Direction.DESCENDING), new Limit(10), true);
+        List<Table> result = tableRepository.read(new Where().greaterThanOrEqual("id", 3), new Order().by("id", Direction.DESCENDING), new Limit(10), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
@@ -100,7 +100,7 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testRead_where_order_limit_includeDeleted_forUpdate_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().lowerThanOrEqual("id", "4"), new Order().by("id", Direction.DESCENDING), new Limit(1), true, true);
+        List<Table> result = tableRepository.read(new Where().lowerThanOrEqual("id", 4), new Order().by("id", Direction.DESCENDING), new Limit(1), true, true);
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(4, 300, "T300", true)));
     }
@@ -175,7 +175,7 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testReadForUpdate_where_order_shouldSucceed() {
-        List<Table> result = tableRepository.readForUpdate(new Where().greaterThan("id", "1"), new Order().by("number", Direction.DESCENDING));
+        List<Table> result = tableRepository.readForUpdate(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
@@ -185,14 +185,14 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testReadForUpdate_where_order_limit_shouldSucceed() {
-        List<Table> result = tableRepository.readForUpdate(new Where().lowerThan("id", "3"), new Order().by("number", Direction.DESCENDING), new Limit(1, 1));
+        List<Table> result = tableRepository.readForUpdate(new Where().lowerThan("id", 3), new Order().by("number", Direction.DESCENDING), new Limit(1, 1));
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
     }
 
     @Test
     public void testReadForUpdate_where_order_limit_includeDeleted_shouldSucceed() {
-        List<Table> result = tableRepository.readForUpdate(new Where().greaterThanOrEqual("id", "3"), new Order().by("id", Direction.DESCENDING), new Limit(10), true);
+        List<Table> result = tableRepository.readForUpdate(new Where().greaterThanOrEqual("id", 3), new Order().by("id", Direction.DESCENDING), new Limit(10), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
@@ -255,7 +255,7 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testReadOne_where_order_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOne(new Where().greaterThan("id", "1"), new Order().by("number", Direction.DESCENDING));
+        Optional<Table> result = tableRepository.readOne(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
     }
@@ -298,7 +298,7 @@ public class AbstractRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testReadOneForUpdate_where_order_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOneForUpdate(new Where().greaterThan("id", "1"), new Order().by("number", Direction.DESCENDING));
+        Optional<Table> result = tableRepository.readOneForUpdate(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
     }

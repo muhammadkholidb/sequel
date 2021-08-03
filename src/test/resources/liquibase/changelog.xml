@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="sequel" id="1" objectQuotingStrategy="QUOTE_ALL_OBJECTS" >
+        <createTable tableName="table">
+            <column name="id" type="java.sql.Types.BIGINT" autoIncrement="true" >
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="created_at" type="java.sql.Types.TIMESTAMP" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="java.sql.Types.TIMESTAMP" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="deleted_at" type="java.sql.Types.TIMESTAMP" />
+            <column name="number" type="java.sql.Types.INTEGER" />
+            <column name="code" type="java.sql.Types.VARCHAR(128)" />
+        </createTable>
+    </changeSet>
+</databaseChangeLog> 

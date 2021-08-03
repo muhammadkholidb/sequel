@@ -35,6 +35,7 @@ import com.gitlab.muhammadkholidb.sequel.sql.Order;
 import com.gitlab.muhammadkholidb.sequel.sql.Where;
 import com.gitlab.muhammadkholidb.sequel.utility.SQLUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +76,9 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
 
     @Value("${sequel.jdbc.formatsql:false}")
     protected Boolean formatSql;
+
+    @Value("${sequel.jdbc.tableschema:}")
+    protected String tableSchema;
 
     protected Class<M> modelClass;
 
@@ -217,6 +221,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         List<Object> values = where.getValues();
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM ");
+        if (StringUtils.isNotBlank(tableSchema)) {
+            sb.append(quoteIfReserved(tableSchema));
+            sb.append(".");
+        }
         sb.append(quoteIfReserved(tableName));
         if (!values.isEmpty()) {
             sb.append(where.getClause(this::quoteIfReserved));
@@ -356,6 +364,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         List<Object> values = where.getValues();
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT COUNT(id) FROM ");
+        if (StringUtils.isNotBlank(tableSchema)) {
+            sb.append(quoteIfReserved(tableSchema));
+            sb.append(".");
+        }
         sb.append(quoteIfReserved(tableName));
         if (!values.isEmpty()) {
             sb.append(where.getClause(this::quoteIfReserved));
@@ -457,6 +469,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     protected StringBuilder buildSqlInsert(String table, List<String> columns) {
         StringBuilder sb1 = new StringBuilder();
         sb1.append(" INSERT INTO ");
+        if (StringUtils.isNotBlank(tableSchema)) {
+            sb1.append(quoteIfReserved(tableSchema));
+            sb1.append(".");
+        }
         sb1.append(quoteIfReserved(table));
         sb1.append(" ( ");
         StringBuilder sb2 = new StringBuilder();
@@ -490,6 +506,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     protected StringBuilder buildSqlUpdate(String table, List<String> columns, Where where) {
         StringBuilder sb = new StringBuilder();
         sb.append(" UPDATE ");
+        if (StringUtils.isNotBlank(tableSchema)) {
+            sb.append(quoteIfReserved(tableSchema));
+            sb.append(".");
+        }
         sb.append(quoteIfReserved(table));
         sb.append(" SET ");
         int i = 0;
@@ -590,6 +610,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         StringBuilder sb = new StringBuilder();
         sb.append(" DELETE FROM ");
+        if (StringUtils.isNotBlank(tableSchema)) {
+            sb.append(quoteIfReserved(tableSchema));
+            sb.append(".");
+        }
         sb.append(quoteIfReserved(tableName));
         if (where != null) {
             sb.append(where.getClause(this::quoteIfReserved));
