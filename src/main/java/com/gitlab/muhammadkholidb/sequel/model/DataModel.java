@@ -1,6 +1,6 @@
 package com.gitlab.muhammadkholidb.sequel.model;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
 
@@ -22,13 +22,13 @@ public abstract class DataModel {
     private Long id;
     
     @DataColumn(C_CREATED_AT)
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
     
     @DataColumn(C_UPDATED_AT)
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
     
     @DataColumn(C_DELETED_AT)
-    private OffsetDateTime deletedAt;
+    private Instant deletedAt;
 
     public abstract String tableName();
 

@@ -60,3 +60,17 @@ test-postgresql:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
+
+test-mysql:
+  variables:
+    JACOCO_REPORT_HTML: $CI_PROJECT_DIR/target/site/jacoco/index.html
+  stage: test
+  script: 
+    - mvn $MAVEN_CLI_OPTS verify -Dspring.profiles.active=test-mysql
+    - if [ -f $JACOCO_REPORT_HTML ]; then cat $JACOCO_REPORT_HTML | grep -o "Total[^%]*%"; fi
+  allow_failure: false
+  coverage: "/Total.*?([0-9]{1,3})%/"
+  artifacts:
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml

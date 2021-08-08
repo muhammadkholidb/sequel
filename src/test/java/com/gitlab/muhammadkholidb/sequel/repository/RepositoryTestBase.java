@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import liquibase.integration.spring.SpringLiquibase;
 
 @DBRider
-@DBUnit(caseSensitiveTableNames = true, escapePattern = "\"")
+@DBUnit(caseSensitiveTableNames = true)
 @SpringJUnitConfig(RepositoryTestBase.Config.class)
 public abstract class RepositoryTestBase {
 
