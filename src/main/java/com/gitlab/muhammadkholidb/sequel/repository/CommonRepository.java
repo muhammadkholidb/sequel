@@ -16,25 +16,47 @@ import com.gitlab.muhammadkholidb.sequel.sql.Where;
 public interface CommonRepository<M extends DataModel> {
 
     /**
-     * Inserts a new data to the table name defined in the model (SQL INSERT).
+     * Inserts a new data to the table.
      * 
-     * @param model a data model.
-     * @return generated ID.
+     * @param model a data model
+     * @return generated ID
      */
     Long create(M model);
 
     /**
-     * Reads all data in the table name defined in the model (SQL SELECT). Data with
-     * null value on the column deleted_at will be returned.
+     * Reads all data in the table. Returns data which is not (softly) deleted.
      * 
-     * @return list of data models.
+     * @return list of data models
      */
     List<M> read();
 
+    /**
+     * Reads all data in the table with an option to include (softly) deleted data.
+     * 
+     * @param includeDeleted will include the (softly) deleted data when the value
+     *                       is true
+     * @return list of data models
+     */
     List<M> read(boolean includeDeleted);
 
+    /**
+     * Reads all data in the table filtered with specified SQL WHERE condition.
+     * Returns data which is not (softly) deleted.
+     * 
+     * @param where the SQL WHERE condition
+     * @return list of data models
+     */
     List<M> read(Where where);
 
+    /**
+     * Reads all data in the table filtered with specified SQL WHERE condition and
+     * an option to include (softly) deleted data.
+     * 
+     * @param where          the SQL WHERE condition
+     * @param includeDeleted wili include the (softly) deleted data when the value
+     *                       is true
+     * @return list of data models
+     */
     List<M> read(Where where, boolean includeDeleted);
 
     List<M> read(Where where, Order order);

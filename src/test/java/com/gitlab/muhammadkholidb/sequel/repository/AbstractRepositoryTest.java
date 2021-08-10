@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.nullValue;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
 import com.gitlab.muhammadkholidb.sequel.model.DataModel;
 import com.gitlab.muhammadkholidb.sequel.sql.Limit;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Repository;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@DataSet("table.yml")
+@DatabaseSetup("/datasets/table.xml")
 public class AbstractRepositoryTest extends RepositoryTestBase {
 
     @Autowired
@@ -41,24 +41,24 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(3));
         assertThat(result,
                 contains(
-                    getTableMatchers(1, 100, "T100", false),
-                    getTableMatchers(2, 200, "T200", false),
-                    getTableMatchers(3, 300, "T300", false)));
+                    getTableMatchers(1, 4, "T100", false),
+                    getTableMatchers(2, 2, "T200", false),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
     public void testRead_where_shouldSucceed() {
         List<Table> result = tableRepository
-                .read(new Where().equals("number", 100).andEqualsIgnoreCase("code", "T100"));
+                .read(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
+        assertThat(result, contains(getTableMatchers(1, 4, "T100", false)));
     }
 
     @Test
     public void testRead_where_limit_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().startsWith("code", "T1"), new Limit(2));
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
+        assertThat(result, contains(getTableMatchers(1, 4, "T100", false)));
     }
 
     @Test
@@ -67,25 +67,25 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(2));
         assertThat(result, 
                 containsInAnyOrder(
-                    getTableMatchers(4, 300, "T300", true),
-                    getTableMatchers(3, 300, "T300", false)));
+                    getTableMatchers(4, 3, "T300", false),
+                    getTableMatchers(3, 3, "T300", true)));
     }
 
     @Test
     public void testRead_where_order_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
+        List<Table> result = tableRepository.read(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(2, 200, "T200", false)));
+                    getTableMatchers(4, 3, "T300", false),
+                    getTableMatchers(2, 2, "T200", false)));
     }
 
     @Test
     public void testRead_where_order_limit_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().lowerThan("id", 3), new Order().by("number", Direction.DESCENDING), new Limit(1, 1));
+        List<Table> result = tableRepository.read(new Where().lowerThan("id", 3), new Order().by("limit", Direction.DESCENDING), new Limit(1, 1));
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
+        assertThat(result, contains(getTableMatchers(2, 2, "T200", false)));
     }
 
     @Test
@@ -94,15 +94,15 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(4, 300, "T300", true),
-                    getTableMatchers(3, 300, "T300", false)));
+                    getTableMatchers(4, 3, "T300", false),
+                    getTableMatchers(3, 3, "T300", true)));
     }
 
     @Test
     public void testRead_where_order_limit_includeDeleted_forUpdate_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().lowerThanOrEqual("id", 4), new Order().by("id", Direction.DESCENDING), new Limit(1), true, true);
+        List<Table> result = tableRepository.read(new Where().lowerThanOrEqual("id", 3), new Order().by("id", Direction.DESCENDING), new Limit(1), true, true);
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(4, 300, "T300", true)));
+        assertThat(result, contains(getTableMatchers(3, 3, "T300", true)));
     }
 
     @Test
@@ -111,18 +111,18 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(4, 300, "T300", true)));
+                    getTableMatchers(3, 3, "T300", true),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
     public void testRead_where_includeDeleted_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().equals("number", 300), true);
+        List<Table> result = tableRepository.read(new Where().equals("limit", 3), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(4, 300, "T300", true)));
+                    getTableMatchers(3, 3, "T300", true),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
@@ -131,10 +131,10 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(4));
         assertThat(result, 
                 contains(
-                    getTableMatchers(1, 100, "T100", false),
-                    getTableMatchers(2, 200, "T200", false),
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(4, 300, "T300", true)));
+                    getTableMatchers(1, 4, "T100", false),
+                    getTableMatchers(2, 2, "T200", false),
+                    getTableMatchers(3, 3, "T300", true),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
@@ -143,24 +143,24 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(3));
         assertThat(result,
                 contains(
-                    getTableMatchers(1, 100, "T100", false),
-                    getTableMatchers(2, 200, "T200", false),
-                    getTableMatchers(3, 300, "T300", false)));
+                    getTableMatchers(1, 4, "T100", false),
+                    getTableMatchers(2, 2, "T200", false),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
     public void testReadForUpdate_where_shouldSucceed() {
         List<Table> result = tableRepository
-                .readForUpdate(new Where().equals("number", 100).andEqualsIgnoreCase("code", "T100"));
+                .readForUpdate(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
+        assertThat(result, contains(getTableMatchers(1, 4, "T100", false)));
     }
 
     @Test
     public void testReadForUpdate_where_limit_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().startsWith("code", "T1"), new Limit(2));
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
+        assertThat(result, contains(getTableMatchers(1, 4, "T100", false)));
     }
 
     @Test
@@ -169,25 +169,25 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(2));
         assertThat(result, 
                 containsInAnyOrder(
-                    getTableMatchers(4, 300, "T300", true),
-                    getTableMatchers(3, 300, "T300", false)));
+                    getTableMatchers(4, 3, "T300", false),
+                    getTableMatchers(3, 3, "T300", true)));
     }
 
     @Test
     public void testReadForUpdate_where_order_shouldSucceed() {
-        List<Table> result = tableRepository.readForUpdate(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
+        List<Table> result = tableRepository.readForUpdate(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(2, 200, "T200", false)));
+                    getTableMatchers(4, 3, "T300", false),
+                    getTableMatchers(2, 2, "T200", false)));
     }
 
     @Test
     public void testReadForUpdate_where_order_limit_shouldSucceed() {
-        List<Table> result = tableRepository.readForUpdate(new Where().lowerThan("id", 3), new Order().by("number", Direction.DESCENDING), new Limit(1, 1));
+        List<Table> result = tableRepository.readForUpdate(new Where().lowerThan("id", 3), new Order().by("limit", Direction.DESCENDING), new Limit(1, 1));
         assertThat(result, hasSize(1));
-        assertThat(result, contains(getTableMatchers(1, 100, "T100", false)));
+        assertThat(result, contains(getTableMatchers(2, 2, "T200", false)));
     }
 
     @Test
@@ -196,8 +196,8 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(4, 300, "T300", true),
-                    getTableMatchers(3, 300, "T300", false)));
+                    getTableMatchers(4, 3, "T300", false),
+                    getTableMatchers(3, 3, "T300", true)));
     }
 
     @Test
@@ -206,18 +206,18 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(4, 300, "T300", true)));
+                    getTableMatchers(3, 3, "T300", true),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
     public void testReadForUpdate_where_includeDeleted_shouldSucceed() {
-        List<Table> result = tableRepository.readForUpdate(new Where().equals("number", 300), true);
+        List<Table> result = tableRepository.readForUpdate(new Where().equals("limit", 3), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
                 contains(
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(4, 300, "T300", true)));
+                    getTableMatchers(3, 3, "T300", true),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
@@ -226,88 +226,88 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         assertThat(result, hasSize(4));
         assertThat(result, 
                 contains(
-                    getTableMatchers(1, 100, "T100", false),
-                    getTableMatchers(2, 200, "T200", false),
-                    getTableMatchers(3, 300, "T300", false),
-                    getTableMatchers(4, 300, "T300", true)));
+                    getTableMatchers(1, 4, "T100", false),
+                    getTableMatchers(2, 2, "T200", false),
+                    getTableMatchers(3, 3, "T300", true),
+                    getTableMatchers(4, 3, "T300", false)));
     }
 
     @Test
     public void testReadOne_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOne(4l);
+        Optional<Table> result = tableRepository.readOne(3l);
         assertThat(result.isEmpty(), is(true));
     }
 
     @Test
     public void testReadOne_includeDeleted_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOne(4l, true);
+        Optional<Table> result = tableRepository.readOne(3l, true);
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(4, 300, "T300", true));
+        assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
     public void testReadOne_where_shouldSucceed() {
         Optional<Table> result = tableRepository
-                .readOne(new Where().equals("number", 100).andEqualsIgnoreCase("code", "T100"));
+                .readOne(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(1, 100, "T100", false));
+        assertThat(result.get(), getTableMatchers(1, 4, "T100", false));
     }
 
     @Test
     public void testReadOne_where_order_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOne(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
+        Optional<Table> result = tableRepository.readOne(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+        assertThat(result.get(), getTableMatchers(4, 3, "T300", false));
     }
 
     @Test
     public void testReadOne_where_order_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+        assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
     public void testReadOne_where_order_includeDeleted_forUpdate_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true, true);
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+        assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
     public void testReadOne_where_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository
-                .readOne(new Where().equals("number", 300).andEqualsIgnoreCase("code", "T300"), true);
+                .readOne(new Where().equals("limit", 3).andEqualsIgnoreCase("code", "T300"), true);
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+        assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
     public void testReadOneForUpdate_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOneForUpdate(4l);
+        Optional<Table> result = tableRepository.readOneForUpdate(3l);
         assertThat(result.isEmpty(), is(true));
     }
 
     @Test
     public void testReadOneForUpdate_where_shouldSucceed() {
         Optional<Table> result = tableRepository
-                .readOneForUpdate(new Where().equals("number", 100).andEqualsIgnoreCase("code", "T100"));
+                .readOneForUpdate(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(1, 100, "T100", false));
+        assertThat(result.get(), getTableMatchers(1, 4, "T100", false));
     }
 
     @Test
     public void testReadOneForUpdate_where_order_shouldSucceed() {
-        Optional<Table> result = tableRepository.readOneForUpdate(new Where().greaterThan("id", 1), new Order().by("number", Direction.DESCENDING));
+        Optional<Table> result = tableRepository.readOneForUpdate(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+        assertThat(result.get(), getTableMatchers(4, 3, "T300", false));
     }
 
     @Test
     public void testReadOneForUpdate_where_order_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository.readOneForUpdate(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), getTableMatchers(3, 300, "T300", false));
+        assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
@@ -330,20 +330,20 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
 
     @Test
     public void testExists_shouldSucceed() {
-        boolean result = tableRepository.exists(4l);
+        boolean result = tableRepository.exists(3l);
         assertThat(result, is(false));
     }
 
     @Test
     public void testExists_where_shouldSucceed() {
-        boolean result = tableRepository.exists(new Where().equals("number", 300));
+        boolean result = tableRepository.exists(new Where().equals("limit", 3));
         assertThat(result, is(true));
     }
 
-    private Matcher<Table> getTableMatchers(long id, int num, String code, boolean isDeleted) {
+    private Matcher<Table> getTableMatchers(long id, int limit, String code, boolean isDeleted) {
         return allOf(
                     hasProperty("id", is(id)), 
-                    hasProperty("number", is(num)),
+                    hasProperty("limit", is(limit)),
                     hasProperty("code", is(code)), 
                     hasProperty("deletedAt", isDeleted ? notNullValue() : nullValue()));
     } 
@@ -357,8 +357,8 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     @EqualsAndHashCode(callSuper = false)
     public static class Table extends DataModel {
 
-        @DataColumn("number")
-        private Integer number;
+        @DataColumn("limit")
+        private Integer limit;
 
         @DataColumn("code")
         private String code;

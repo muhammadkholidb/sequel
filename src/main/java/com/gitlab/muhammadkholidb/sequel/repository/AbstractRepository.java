@@ -129,8 +129,8 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
 
     @PostConstruct
     void init() {
-        sqlQuoteString = getIdentifierQuoteString();
-        sqlReservedWords = getSQLKeywords();
+        loadSqlQuoteString();
+        loadSqlReservedWords();
     }
 
     private String getModelTableName() {
@@ -144,23 +144,22 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
     }
 
-    private String getIdentifierQuoteString() {
+    private void loadSqlQuoteString() {
         try {
-            return databaseMetaData.getIdentifierQuoteString().trim();
+            sqlQuoteString = databaseMetaData.getIdentifierQuoteString().trim();
         } catch (SQLException e) {
-            return "";
+            sqlQuoteString = "";
         }
     }
 
-    private Set<String> getSQLKeywords() {
-        Set<String> set = new HashSet<>();
-        Collections.addAll(set, DEFAULT_SQL_RESERVED_WORDS.split(","));
+    private void loadSqlReservedWords() {
+        sqlReservedWords = new HashSet<>();
+        Collections.addAll(sqlReservedWords, DEFAULT_SQL_RESERVED_WORDS.split(","));
         try {
-            Collections.addAll(set, databaseMetaData.getSQLKeywords().toUpperCase().split(","));
+            Collections.addAll(sqlReservedWords, databaseMetaData.getSQLKeywords().toUpperCase().split(","));
         } catch (SQLException e) {
             // Do nothing
         }
-        return set;
     }
 
     protected boolean isReserved(String word) {
@@ -172,7 +171,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     }
 
     /**
-     * Quote the word with database specific quote string. Might be quoted by empty
+     * Quotes the word with database specific quote string. Might be quoted by empty
      * string if no quote string spcified by the database.
      * 
      * @param word the word to be quoted with

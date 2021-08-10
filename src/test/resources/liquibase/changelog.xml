@@ -20,7 +20,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="deleted_at" type="java.sql.Types.TIMESTAMP" />
-            <column name="number" type="java.sql.Types.INTEGER" />
+            <column name="limit" type="java.sql.Types.INTEGER" />
             <column name="code" type="java.sql.Types.VARCHAR(128)" />
         </createTable>
     </changeSet>
