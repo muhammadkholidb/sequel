@@ -42,9 +42,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
@@ -271,9 +268,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
-
-        return jdbcTemplate.query(sql, new CustomArgumentPreparedStatementSetter(values.toArray()),
-                new CustomBeanRowMapper<>(modelClass));
+        return performSelect(sql, values, modelClass);
     }
 
     @Override
@@ -438,14 +433,14 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
                 log.error("Failed to get value of field: {}: {}", field.getName(), e.getMessage());
             }
         }
-        return executeInsert(columns.toArray(new String[columns.size()]), values.toArray());
+        return insert(columns.toArray(new String[columns.size()]), values.toArray());
     }
 
     private <T> List<T> toList(T[] arr) {
         return new ArrayList<>(Arrays.asList(arr));
     }
 
-    protected Long executeInsert(String[] columns, Object[] values) {
+    protected Long insert(String[] columns, Object[] values) {
         if (columns.length != values.length) {
             throw new IllegalArgumentException("Array of columns and values must be in the same length");
         }
@@ -600,7 +595,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = buildSqlUpdate(tableName, listColumns, where).toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.update(sql, new CustomArgumentPreparedStatementSetter(listValues.toArray()));
+        return executeUpdate(sql, listValues);
     }
 
     @Override
@@ -640,8 +635,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.update(sql, new CustomArgumentPreparedStatementSetter(
-                where == null ? new Object[] {} : where.getValues().toArray()));
+        return executeUpdate(sql, where == null ? new ArrayList<>() : where.getValues());
     }
 
     @Override
@@ -662,6 +656,57 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Override
     public Integer delete(List<Long> ids) {
         return delete(ids, false);
+    }
+
+    /**
+     * Performs a SELECT query.
+     * 
+     * @param <T>
+     * @param sql
+     * @param returnType
+     * @param params
+     * @return
+     */
+    protected <T> List<T> performSelect(String sql, Class<T> returnType, Object... params) {
+        return jdbcTemplate.query(sql, new CustomArgumentPreparedStatementSetter(params),
+                new CustomBeanRowMapper<>(returnType));
+    }
+
+    /**
+     * Performs a SELECT query.
+     * 
+     * @param <T>
+     * @param sql
+     * @param returnType
+     * @param params
+     * @return
+     */
+    protected <T> List<T> performSelect(String sql, List<Object> params, Class<T> returnType) {
+        return performSelect(sql, returnType, params == null ? new Object[] {} : params.toArray());
+    }
+
+    /**
+     * Executes a DML (Data Manipulation Languange) query such as CREATE, UPDATE,
+     * DELETE, etc.
+     * 
+     * @param sql
+     * @param params
+     * @return
+     */
+    protected int executeUpdate(String sql, Object... params) {
+        return jdbcTemplate.update(sql, new CustomArgumentPreparedStatementSetter(params));
+    }
+
+    /**
+     * Executes a DML (Data Manipulation Languange) query such as CREATE, UPDATE,
+     * DELETE, etc.
+     * 
+     * @param sql
+     * @param params
+     * @return
+     */
+    protected int executeUpdate(String sql, List<Object> params) {
+        return executeUpdate(sql, params == null ? new Object[] {} : params.toArray());
     }
 
 }
