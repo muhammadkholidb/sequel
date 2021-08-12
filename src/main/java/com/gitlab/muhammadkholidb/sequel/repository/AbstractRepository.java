@@ -42,6 +42,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
@@ -465,12 +468,11 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = buildSqlInsert(tableName, listColumns).toString();
         printGeneratedSQL(sql);
+        CustomArgumentPreparedStatementSetter pss = new CustomArgumentPreparedStatementSetter(listValues.toArray());
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
-            for (int i = 0; i < listValues.size(); i++) {
-                ps.setObject(i + 1, listValues.get(i));
-            }
+            pss.setValues(ps);
             return ps;
         }, holder);
         return holder.getKey().longValue();
@@ -598,13 +600,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = buildSqlUpdate(tableName, listColumns, where).toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql);
-            for (int i = 0; i < listValues.size(); i++) {
-                ps.setObject(i + 1, listValues.get(i));
-            }
-            return ps;
-        });
+        return jdbcTemplate.update(sql, new CustomArgumentPreparedStatementSetter(listValues.toArray()));
     }
 
     @Override
@@ -644,7 +640,8 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.update(sql, where == null ? new Object[] {} : where.getValues().toArray());
+        return jdbcTemplate.update(sql, new CustomArgumentPreparedStatementSetter(
+                where == null ? new Object[] {} : where.getValues().toArray()));
     }
 
     @Override
