@@ -10,6 +10,14 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +44,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     private TableRepository tableRepository;
 
     @Test
-    public void testRead_shouldSucceed() {
+    void testRead_shouldSucceed() {
         List<Table> result = tableRepository.read();
         assertThat(result, hasSize(3));
         assertThat(result,
@@ -47,7 +55,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_where_shouldSucceed() {
+    void testRead_where_shouldSucceed() {
         List<Table> result = tableRepository
                 .read(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result, hasSize(1));
@@ -55,14 +63,14 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_where_limit_shouldSucceed() {
+    void testRead_where_limit_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().startsWith("code", "T1"), new Limit(2));
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(1, 4, "T100", false)));
     }
 
     @Test
-    public void testRead_where_limit_includeDeleted_shouldSucceed() {
+    void testRead_where_limit_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().contains("code", "300"), new Limit(100), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -72,7 +80,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_where_order_shouldSucceed() {
+    void testRead_where_order_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -82,14 +90,14 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_where_order_limit_shouldSucceed() {
+    void testRead_where_order_limit_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().lowerThan("id", 3), new Order().by("limit", Direction.DESCENDING), new Limit(1, 1));
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(2, 2, "T200", false)));
     }
 
     @Test
-    public void testRead_where_order_limit_includeDeleted_shouldSucceed() {
+    void testRead_where_order_limit_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().greaterThanOrEqual("id", 3), new Order().by("id", Direction.DESCENDING), new Limit(10), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -99,14 +107,14 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_where_order_limit_includeDeleted_forUpdate_shouldSucceed() {
+    void testRead_where_order_limit_includeDeleted_forUpdate_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().lowerThanOrEqual("id", 3), new Order().by("id", Direction.DESCENDING), new Limit(1), true, true);
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(3, 3, "T300", true)));
     }
 
     @Test
-    public void testRead_where_order_includeDeleted_shouldSucceed() {
+    void testRead_where_order_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -116,7 +124,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_where_includeDeleted_shouldSucceed() {
+    void testRead_where_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.read(new Where().equals("limit", 3), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -126,7 +134,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testRead_includeDeleted_shouldSucceed() {
+    void testRead_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.read(true);
         assertThat(result, hasSize(4));
         assertThat(result, 
@@ -138,7 +146,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_shouldSucceed() {
+    void testReadForUpdate_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate();
         assertThat(result, hasSize(3));
         assertThat(result,
@@ -149,7 +157,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_where_shouldSucceed() {
+    void testReadForUpdate_where_shouldSucceed() {
         List<Table> result = tableRepository
                 .readForUpdate(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result, hasSize(1));
@@ -157,14 +165,14 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_where_limit_shouldSucceed() {
+    void testReadForUpdate_where_limit_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().startsWith("code", "T1"), new Limit(2));
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(1, 4, "T100", false)));
     }
 
     @Test
-    public void testReadForUpdate_where_limit_includeDeleted_shouldSucceed() {
+    void testReadForUpdate_where_limit_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().contains("code", "300"), new Limit(100), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -174,7 +182,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_where_order_shouldSucceed() {
+    void testReadForUpdate_where_order_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -184,14 +192,14 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_where_order_limit_shouldSucceed() {
+    void testReadForUpdate_where_order_limit_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().lowerThan("id", 3), new Order().by("limit", Direction.DESCENDING), new Limit(1, 1));
         assertThat(result, hasSize(1));
         assertThat(result, contains(getTableMatchers(2, 2, "T200", false)));
     }
 
     @Test
-    public void testReadForUpdate_where_order_limit_includeDeleted_shouldSucceed() {
+    void testReadForUpdate_where_order_limit_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().greaterThanOrEqual("id", 3), new Order().by("id", Direction.DESCENDING), new Limit(10), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -201,7 +209,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_where_order_includeDeleted_shouldSucceed() {
+    void testReadForUpdate_where_order_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -211,7 +219,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_where_includeDeleted_shouldSucceed() {
+    void testReadForUpdate_where_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(new Where().equals("limit", 3), true);
         assertThat(result, hasSize(2));
         assertThat(result, 
@@ -221,7 +229,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadForUpdate_includeDeleted_shouldSucceed() {
+    void testReadForUpdate_includeDeleted_shouldSucceed() {
         List<Table> result = tableRepository.readForUpdate(true);
         assertThat(result, hasSize(4));
         assertThat(result, 
@@ -233,20 +241,20 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadOne_shouldSucceed() {
+    void testReadOne_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(3l);
         assertThat(result.isEmpty(), is(true));
     }
 
     @Test
-    public void testReadOne_includeDeleted_shouldSucceed() {
+    void testReadOne_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(3l, true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
-    public void testReadOne_where_shouldSucceed() {
+    void testReadOne_where_shouldSucceed() {
         Optional<Table> result = tableRepository
                 .readOne(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result.isPresent(), is(true));
@@ -254,28 +262,28 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadOne_where_order_shouldSucceed() {
+    void testReadOne_where_order_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(4, 3, "T300", false));
     }
 
     @Test
-    public void testReadOne_where_order_includeDeleted_shouldSucceed() {
+    void testReadOne_where_order_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
-    public void testReadOne_where_order_includeDeleted_forUpdate_shouldSucceed() {
+    void testReadOne_where_order_includeDeleted_forUpdate_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true, true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
-    public void testReadOne_where_includeDeleted_shouldSucceed() {
+    void testReadOne_where_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository
                 .readOne(new Where().equals("limit", 3).andEqualsIgnoreCase("code", "T300"), true);
         assertThat(result.isPresent(), is(true));
@@ -283,13 +291,13 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadOneForUpdate_shouldSucceed() {
+    void testReadOneForUpdate_shouldSucceed() {
         Optional<Table> result = tableRepository.readOneForUpdate(3l);
         assertThat(result.isEmpty(), is(true));
     }
 
     @Test
-    public void testReadOneForUpdate_where_shouldSucceed() {
+    void testReadOneForUpdate_where_shouldSucceed() {
         Optional<Table> result = tableRepository
                 .readOneForUpdate(new Where().equals("limit", 4).andEqualsIgnoreCase("code", "T100"));
         assertThat(result.isPresent(), is(true));
@@ -297,47 +305,61 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     }
 
     @Test
-    public void testReadOneForUpdate_where_order_shouldSucceed() {
+    void testReadOneForUpdate_where_order_shouldSucceed() {
         Optional<Table> result = tableRepository.readOneForUpdate(new Where().greaterThan("id", 1), new Order().by("limit", Direction.DESCENDING));
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(4, 3, "T300", false));
     }
 
     @Test
-    public void testReadOneForUpdate_where_order_includeDeleted_shouldSucceed() {
+    void testReadOneForUpdate_where_order_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository.readOneForUpdate(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
-    public void testCount_shouldSucceed() {
+    void testCount_shouldSucceed() {
         int result = tableRepository.count();
         assertThat(result, is(3));
     }
 
     @Test
-    public void testCount_where_shouldSucceed() {
+    void testCount_where_shouldSucceed() {
         int result = tableRepository.count(new Where().notEquals("code", "T200"));
         assertThat(result, is(2));
     }
 
     @Test
-    public void testCount_where_includeDeleted_shouldSucceed() {
+    void testCount_where_includeDeleted_shouldSucceed() {
         int result = tableRepository.count(new Where(), true);
         assertThat(result, is(4));
     }
 
     @Test
-    public void testExists_shouldSucceed() {
+    void testExists_shouldSucceed() {
         boolean result = tableRepository.exists(3l);
         assertThat(result, is(false));
     }
 
     @Test
-    public void testExists_where_shouldSucceed() {
+    void testExists_where_shouldSucceed() {
         boolean result = tableRepository.exists(new Where().equals("limit", 3));
         assertThat(result, is(true));
+    }
+
+    @Test
+    void testReadOne_where_withJavaTime_shouldSucceed() {
+        Optional<Table> result = tableRepository
+                .readOne(new Where()
+                        .lowerThan("created_at", Instant.now())
+                        .andLowerThan("zdt", ZonedDateTime.now())
+                        .andLowerThan("odt", OffsetDateTime.now())
+                        .andLowerThan("ldt", LocalDateTime.now())
+                        .andEquals("ld", LocalDate.of(2021, 4, 1))
+                        .andEquals("lt", LocalTime.of(14, 0, 0))
+                        .andEquals("ot", OffsetTime.of(LocalTime.of(13, 0, 0), ZoneOffset.UTC)));
+        assertThat(result.isPresent(), is(true));
     }
 
     private Matcher<Table> getTableMatchers(long id, int limit, String code, boolean isDeleted) {
@@ -349,7 +371,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     } 
 
     @Repository
-    public static class TableRepository extends AbstractRepository<Table> {
+    static class TableRepository extends AbstractRepository<Table> {
 
     }
 
@@ -363,6 +385,24 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         @DataColumn("code")
         private String code;
 
+        @DataColumn("zdt")
+        private ZonedDateTime zdt;
+
+        @DataColumn("odt")
+        private OffsetDateTime odt;
+        
+        @DataColumn("ot")
+        private OffsetTime ot;
+        
+        @DataColumn("ldt")
+        private LocalDateTime ldt;
+        
+        @DataColumn("ld")
+        private LocalDate ld;
+        
+        @DataColumn("lt")
+        private LocalTime lt;
+        
         @Override
         public String tableName() {
             return "table";

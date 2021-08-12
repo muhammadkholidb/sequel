@@ -22,6 +22,12 @@
             <column name="deleted_at" type="java.sql.Types.TIMESTAMP" />
             <column name="limit" type="java.sql.Types.INTEGER" />
             <column name="code" type="java.sql.Types.VARCHAR(128)" />
+            <column name="zdt" type="java.sql.Types.TIMESTAMP" />
+            <column name="odt" type="java.sql.Types.TIMESTAMP" />
+            <column name="ot" type="java.sql.Types.TIME" />
+            <column name="ldt" type="java.sql.Types.TIMESTAMP" />
+            <column name="ld" type="java.sql.Types.DATE" />
+            <column name="lt" type="java.sql.Types.TIME" />
         </createTable>
     </changeSet>
 </databaseChangeLog> 

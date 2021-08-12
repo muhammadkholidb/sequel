@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class SQLUtilTest {
+public class SQLUtilsTest {
 
     @Test
     void testFormat_withParamsList_shouldSucceed() {

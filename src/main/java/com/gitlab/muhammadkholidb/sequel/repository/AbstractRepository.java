@@ -28,6 +28,8 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
+import com.gitlab.muhammadkholidb.sequel.jdbc.CustomArgumentPreparedStatementSetter;
+import com.gitlab.muhammadkholidb.sequel.jdbc.CustomBeanRowMapper;
 import com.gitlab.muhammadkholidb.sequel.model.DataModel;
 import com.gitlab.muhammadkholidb.sequel.sql.Limit;
 import com.gitlab.muhammadkholidb.sequel.sql.LimitFactory;
@@ -39,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -267,8 +268,9 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.query(sql, values.isEmpty() ? new Object[] {} : values.toArray(),
-                BeanPropertyRowMapper.newInstance(modelClass));
+
+        return jdbcTemplate.query(sql, new CustomArgumentPreparedStatementSetter(values.toArray()),
+                new CustomBeanRowMapper<>(modelClass));
     }
 
     @Override
@@ -401,7 +403,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         String sql = sb.toString();
         printGeneratedSQL(sql);
-        return jdbcTemplate.queryForObject(sql, values.isEmpty() ? new Object[] {} : values.toArray(), Integer.class);
+        return jdbcTemplate.queryForObject(sql, Integer.class, values.toArray());
     }
 
     @Override
