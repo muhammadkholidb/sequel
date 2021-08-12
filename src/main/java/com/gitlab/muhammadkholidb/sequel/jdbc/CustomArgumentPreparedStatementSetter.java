@@ -65,7 +65,7 @@ public class CustomArgumentPreparedStatementSetter extends ArgumentPreparedState
         if (argValue instanceof ZonedDateTime) {
             ZonedDateTime zdt = (ZonedDateTime) argValue;
             super.doSetValue(ps, parameterPosition,
-                    new SqlParameterValue(Types.TIMESTAMP_WITH_TIMEZONE, Timestamp.from(zdt.toInstant())));
+                    new SqlParameterValue(Types.TIMESTAMP, Timestamp.from(zdt.toInstant())));
             return;
         }
         super.doSetValue(ps, parameterPosition, argValue);
