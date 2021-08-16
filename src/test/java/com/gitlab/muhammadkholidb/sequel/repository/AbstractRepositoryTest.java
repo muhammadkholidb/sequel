@@ -34,8 +34,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @DatabaseSetup("/datasets/table.xml")
 public class AbstractRepositoryTest extends RepositoryTestBase {
@@ -357,7 +358,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
                         .andLowerThan("odt", OffsetDateTime.now())
                         .andLowerThan("ldt", LocalDateTime.now())
                         .andEquals("ld", LocalDate.of(2021, 4, 1))
-                        .andEquals("lt", LocalTime.of(14, 0, 0))
+                        .andEquals("lt", LocalTime.of(21, 0, 0))
                         .andEquals("ot", OffsetTime.of(LocalTime.of(13, 0, 0), ZoneOffset.UTC)));
         assertThat(result.isPresent(), is(true));
     }
@@ -375,8 +376,9 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
 
     }
 
-    @Data
-    @EqualsAndHashCode(callSuper = false)
+    @Setter
+    @Getter
+    @ToString(callSuper = true)
     public static class Table extends DataModel {
 
         @DataColumn("limit")

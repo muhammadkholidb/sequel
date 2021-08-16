@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 
-import com.gitlab.muhammadkholidb.toolbox.data.TimeUtils;
+import com.gitlab.muhammadkholidb.toolbox.data.DateTimeUtils;
 
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.SqlParameterValue;
@@ -35,19 +35,19 @@ public class CustomArgumentPreparedStatementSetter extends ArgumentPreparedState
         if (argValue instanceof LocalDate) {
             LocalDate ld = (LocalDate) argValue;
             super.doSetValue(ps, parameterPosition,
-                    new SqlParameterValue(Types.DATE, new Date(TimeUtils.toInstant(ld).toEpochMilli())));
+                    new SqlParameterValue(Types.DATE, new Date(DateTimeUtils.toInstant(ld).toEpochMilli())));
             return;
         }
         if (argValue instanceof LocalDateTime) {
             LocalDateTime ldt = (LocalDateTime) argValue;
             super.doSetValue(ps, parameterPosition,
-                    new SqlParameterValue(Types.TIMESTAMP, Timestamp.from(TimeUtils.toInstant(ldt))));
+                    new SqlParameterValue(Types.TIMESTAMP, Timestamp.from(DateTimeUtils.toInstant(ldt))));
             return;
         }
         if (argValue instanceof LocalTime) {
             LocalTime lt = (LocalTime) argValue;
             super.doSetValue(ps, parameterPosition,
-                    new SqlParameterValue(Types.TIME, new Time(TimeUtils.toInstant(lt).toEpochMilli())));
+                    new SqlParameterValue(Types.TIME, new Time(DateTimeUtils.toInstant(lt).toEpochMilli())));
             return;
         }
         if (argValue instanceof OffsetDateTime) {
@@ -59,7 +59,7 @@ public class CustomArgumentPreparedStatementSetter extends ArgumentPreparedState
         if (argValue instanceof OffsetTime) {
             OffsetTime ot = (OffsetTime) argValue;
             super.doSetValue(ps, parameterPosition,
-                    new SqlParameterValue(Types.TIME, new Time(TimeUtils.toInstant(ot).toEpochMilli())));
+                    new SqlParameterValue(Types.TIME, new Time(DateTimeUtils.toInstant(ot).toEpochMilli())));
             return;
         }
         if (argValue instanceof ZonedDateTime) {
