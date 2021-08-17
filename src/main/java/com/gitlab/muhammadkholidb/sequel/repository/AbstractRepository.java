@@ -231,10 +231,6 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         return read(where, order, limit, includeDeleted, false);
     }
 
-    private void printGeneratedSQL(String sql) {
-        log.trace("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SQLUtils.format(sql) : sql);
-    }
-
     @Override
     public List<M> read(Where where, Order order, Limit limit, boolean includeDeleted, boolean forUpdate) {
         if (where == null) {
@@ -265,9 +261,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         if (forUpdate) {
             sb.append(" FOR UPDATE "); // Set table row locking
         }
-        String sql = sb.toString();
-        printGeneratedSQL(sql);
-        return performSelect(sql, values, modelClass);
+        return performSelect(sb.toString(), values, modelClass);
     }
 
     @Override
@@ -593,7 +587,6 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             listValues.addAll(where.getValues());
         }
         String sql = buildSqlUpdate(tableName, listColumns, where).toString();
-        printGeneratedSQL(sql);
         return executeUpdate(sql, listValues);
     }
 
@@ -633,7 +626,6 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(where.getClause(this::quoteIfReserved));
         }
         String sql = sb.toString();
-        printGeneratedSQL(sql);
         return executeUpdate(sql, where == null ? new ArrayList<>() : where.getValues());
     }
 
@@ -657,6 +649,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         return delete(ids, false);
     }
 
+    private void printGeneratedSQL(String sql) {
+        log.trace("Generated SQL: {}", Boolean.TRUE.equals(formatSql) ? "\n" + SQLUtils.format(sql) : sql);
+    }
+
     /**
      * Performs a SELECT query.
      * 
@@ -667,6 +663,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * @return
      */
     protected <T> List<T> performSelect(String sql, Class<T> returnType, Object... params) {
+        printGeneratedSQL(sql);
         return jdbcTemplate.query(sql, new CustomArgumentPreparedStatementSetter(params),
                 new CustomBeanRowMapper<>(returnType));
     }
@@ -693,6 +690,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * @return
      */
     protected int executeUpdate(String sql, Object... params) {
+        printGeneratedSQL(sql);
         return jdbcTemplate.update(sql, new CustomArgumentPreparedStatementSetter(params));
     }
 

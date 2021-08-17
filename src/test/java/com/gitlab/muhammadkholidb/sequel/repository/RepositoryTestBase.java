@@ -52,6 +52,7 @@ public abstract class RepositoryTestBase {
                 throws SQLException, DatabaseUnitException {
             DatabaseDataSourceConnection databaseConnection = new DatabaseDataSourceConnection(dataSource);
             DatabaseConfig databaseConfig = databaseConnection.getConfig();
+            databaseConfig.setProperty(DatabaseConfig.FEATURE_ALLOW_EMPTY_FIELDS, true);
             databaseConfig.setProperty(DatabaseConfig.FEATURE_CASE_SENSITIVE_TABLE_NAMES, true);
             databaseConfig.setProperty(DatabaseConfig.PROPERTY_ESCAPE_PATTERN, getEscapePattern(databaseMetaData));
             databaseConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, getDataTypeFactory(databaseMetaData));
