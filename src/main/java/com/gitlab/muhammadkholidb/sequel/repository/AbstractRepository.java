@@ -13,8 +13,7 @@ import java.lang.reflect.Type;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -444,7 +443,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         if (columns.length != values.length) {
             throw new IllegalArgumentException("Array of columns and values must be in the same length");
         }
-        Timestamp now = Timestamp.from(Instant.now());
+        LocalDateTime now = LocalDateTime.now();
         List<String> listColumns = toList(columns);
         List<Object> listValues = toList(values);
         int idxCreateDt = listColumns.indexOf(C_CREATED_AT);
@@ -575,7 +574,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         if (columns.length != values.length) {
             throw new IllegalArgumentException("Array of columns and values must be in the same length");
         }
-        Timestamp now = Timestamp.from(Instant.now());
+        LocalDateTime now = LocalDateTime.now();
         List<String> listColumns = toList(columns);
         List<Object> listValues = toList(values);
         int idxCreateDt = listColumns.indexOf(C_CREATED_AT);
@@ -621,7 +620,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
     @Override
     public Integer delete(Where where, boolean force) {
         if (!force) {
-            return update(new String[] { C_DELETED_AT }, new Object[] { Timestamp.from(Instant.now()) }, where);
+            return update(new String[] { C_DELETED_AT }, new Object[] { LocalDateTime.now() }, where);
         }
         StringBuilder sb = new StringBuilder();
         sb.append(" DELETE FROM ");
