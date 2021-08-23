@@ -1,4 +1,4 @@
-<a href="https://gitlab.com/muhammadkholidb/sequel/-/pipelines" target="_blank"><img alt="Gitlab pipeline status" src="https://img.shields.io/gitlab/pipeline/muhammadkholidb/sequel/master?logo=gitlab&style=for-the-badge"></a> 
+<a href="https://gitlab.com/muhammadkholidb/sequel/-/pipelines" target="_blank"><img alt="Gitlab pipeline status" src="https://img.shields.io/gitlab/pipeline/muhammadkholidb/toolbox/master?label=pipeline&logo=gitlab&style=for-the-badge"></a> 
 <a href="https://gitlab.com/muhammadkholidb/sequel/-/jobs" target="_blank"><img alt="Gitlab code coverage" src="https://img.shields.io/gitlab/coverage/muhammadkholidb/sequel/master?logo=gitlab&style=for-the-badge"></a> 
 
 # Sequel
