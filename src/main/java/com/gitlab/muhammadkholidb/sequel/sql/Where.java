@@ -14,11 +14,7 @@ public class Where {
 
     private static final String PREFIX = " WHERE ";
 
-    private final List<Holder> holders;
-
-    public Where() {
-        this.holders = new ArrayList<>();
-    }
+    private final List<Holder> holders = new ArrayList<>();
 
     public Where equals(String column, Object value) {
         return andEquals(column, value);
@@ -452,6 +448,7 @@ public class Where {
         }
         StringBuilder sb = new StringBuilder();
         sb.append(PREFIX);
+        sb.append(" ( ");
         for (int i = 0; i < holders.size(); i++) {
             Holder holder = holders.get(i);
             Operator operator = holder.getOperator();
@@ -466,7 +463,8 @@ public class Where {
             switch (condition) {
                 case WHERE:
                     sb.append(" (");
-                    sb.append(where.getClause(fnColumn).substring(PREFIX.length())); // remove " WHERE " inside current WHERE
+                    // remove " WHERE " inside this WHERE
+                    sb.append(where.getClause(fnColumn).substring(PREFIX.length())); 
                     sb.append(") ");
                     break;
                 case EQUALS:
@@ -529,6 +527,7 @@ public class Where {
                     break;
             }
         }
+        sb.append(" ) ");
         return sb.toString();
     }
 
