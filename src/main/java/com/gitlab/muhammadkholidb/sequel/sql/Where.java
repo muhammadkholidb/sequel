@@ -2,6 +2,7 @@ package com.gitlab.muhammadkholidb.sequel.sql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 import lombok.Data;
@@ -422,23 +423,30 @@ public class Where {
     }
 
     public List<Object> getValues() {
-        List<Object> values = new ArrayList<>();
-        holders.forEach(holder -> {
-            Object value = holder.getValue();
-            if (value == null) {
-                return;
-            }
-            if (value instanceof List) {
-                values.addAll((List<?>) value);
-            } else {
-                values.add(value);
+        final List<Object> values = new ArrayList<>();
+        holders.forEach(new Consumer<Holder>() {
+            public void accept(Holder holder) {
+                Object value = holder.getValue();
+                if (value == null) {
+                    return;
+                }
+                if (value instanceof List) {
+                    values.addAll((List<?>) value);
+                } else {
+                    values.add(value);
+                }
             }
         });
         return values;
     }
 
     public String getClause() {
-        return getClause(col -> col);
+        return getClause(new UnaryOperator<String>() {
+            @Override
+            public String apply(String col) {
+                return col;
+            }
+        });
     }
 
     public String getClause(UnaryOperator<String> fnColumn) {

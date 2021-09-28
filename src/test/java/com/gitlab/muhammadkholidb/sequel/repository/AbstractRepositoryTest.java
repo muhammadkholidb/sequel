@@ -28,6 +28,7 @@ import com.gitlab.muhammadkholidb.sequel.sql.Limit;
 import com.gitlab.muhammadkholidb.sequel.sql.Order;
 import com.gitlab.muhammadkholidb.sequel.sql.Order.Direction;
 import com.gitlab.muhammadkholidb.sequel.sql.Where;
+import com.gitlab.muhammadkholidb.toolbox.data.ListBuilder;
 
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Test;
@@ -120,7 +121,8 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
 
     @Test
     void testRead_where_order_includeDeleted_shouldSucceed() {
-        List<Table> result = tableRepository.read(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
+        List<Table> result = tableRepository
+                .read(new Where().in("id", new ListBuilder<>().add(3).add(4).build()), new Order().by("id"), true);
         assertThat(result, hasSize(2));
         assertThat(result, contains(getTableMatchers(3, 3, "T300", true), getTableMatchers(4, 3, "T300", false)));
     }
@@ -212,8 +214,10 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
 
     @Test
     void testReadForUpdate_where_order_includeDeleted_shouldSucceed() {
-        List<Table> result = tableRepository
-                .readForUpdate(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
+        List<Table> result = tableRepository.readForUpdate(
+                new Where().in("id", new ListBuilder<>().add(3).add(4).build()),
+                new Order().by("id"),
+                true);
         assertThat(result, hasSize(2));
         assertThat(result, contains(getTableMatchers(3, 3, "T300", true), getTableMatchers(4, 3, "T300", false)));
     }
@@ -270,15 +274,18 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     @Test
     void testReadOne_where_order_includeDeleted_shouldSucceed() {
         Optional<Table> result = tableRepository
-                .readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
+                .readOne(new Where().in("id", new ListBuilder<>().add(3).add(4).build()), new Order().by("id"), true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
 
     @Test
     void testReadOne_where_order_includeDeleted_forUpdate_shouldSucceed() {
-        Optional<Table> result = tableRepository
-                .readOne(new Where().in("id", List.of(3, 4)), new Order().by("id"), true, true);
+        Optional<Table> result = tableRepository.readOne(
+                new Where().in("id", new ListBuilder<>().add(3).add(4).build()),
+                new Order().by("id"),
+                true,
+                true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }
@@ -315,8 +322,10 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
 
     @Test
     void testReadOneForUpdate_where_order_includeDeleted_shouldSucceed() {
-        Optional<Table> result = tableRepository
-                .readOneForUpdate(new Where().in("id", List.of(3, 4)), new Order().by("id"), true);
+        Optional<Table> result = tableRepository.readOneForUpdate(
+                new Where().in("id", new ListBuilder<>().add(3).add(4).build()),
+                new Order().by("id"),
+                true);
         assertThat(result.isPresent(), is(true));
         assertThat(result.get(), getTableMatchers(3, 3, "T300", true));
     }

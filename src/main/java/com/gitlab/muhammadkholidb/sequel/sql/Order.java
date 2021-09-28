@@ -28,7 +28,12 @@ public class Order {
     }
 
     public String getClause() {
-        return getClause(col -> col);
+        return getClause(new UnaryOperator<String>() {
+            @Override
+            public String apply(String col) {
+                return col;
+            }
+        });
     }
 
     public String getClause(UnaryOperator<String> fnColumn) {
