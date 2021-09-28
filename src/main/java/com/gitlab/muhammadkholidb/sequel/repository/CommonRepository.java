@@ -9,8 +9,8 @@ import com.gitlab.muhammadkholidb.sequel.sql.Order;
 import com.gitlab.muhammadkholidb.sequel.sql.Where;
 
 /**
- * 
  * @author muhammad
+ * 
  * @param <M>
  */
 public interface CommonRepository<M extends DataModel> {
@@ -19,6 +19,7 @@ public interface CommonRepository<M extends DataModel> {
      * Inserts a new data to the table.
      * 
      * @param model a data model
+     * 
      * @return generated ID
      */
     Long create(M model);
@@ -35,6 +36,7 @@ public interface CommonRepository<M extends DataModel> {
      * 
      * @param includeDeleted will include the (softly) deleted data when the value
      *                       is true
+     * 
      * @return list of data models
      */
     List<M> read(boolean includeDeleted);
@@ -44,6 +46,7 @@ public interface CommonRepository<M extends DataModel> {
      * Returns data which is not (softly) deleted.
      * 
      * @param where the SQL WHERE condition
+     * 
      * @return list of data models
      */
     List<M> read(Where where);
@@ -55,6 +58,7 @@ public interface CommonRepository<M extends DataModel> {
      * @param where          the SQL WHERE condition
      * @param includeDeleted wili include the (softly) deleted data when the value
      *                       is true
+     * 
      * @return list of data models
      */
     List<M> read(Where where, boolean includeDeleted);

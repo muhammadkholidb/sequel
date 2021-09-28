@@ -7,7 +7,6 @@ import java.util.function.UnaryOperator;
 import lombok.Data;
 
 /**
- *
  * @author muhammad
  */
 public class Where {
@@ -464,7 +463,7 @@ public class Where {
                 case WHERE:
                     sb.append(" (");
                     // remove " WHERE " inside this WHERE
-                    sb.append(where.getClause(fnColumn).substring(PREFIX.length())); 
+                    sb.append(where.getClause(fnColumn).substring(PREFIX.length()));
                     sb.append(") ");
                     break;
                 case EQUALS:
@@ -537,22 +536,23 @@ public class Where {
 
     // @formatter:off
     private enum Condition {
-        WHERE, 
-        EQUALS, 
-        EQUALS_IGNORE_CASE, 
-        LIKE, 
-        LIKE_IGNORE_CASE, 
-        IN, 
-        GREATER_THAN, 
-        GREATER_THAN_OR_EQUAL, 
-        LOWER_THAN, 
+        WHERE,
+        EQUALS,
+        EQUALS_IGNORE_CASE,
+        LIKE,
+        LIKE_IGNORE_CASE,
+        IN,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL,
+        LOWER_THAN,
         LOWER_THAN_OR_EQUAL,
         NULL
     }
     // @formatter:on
 
     private enum Operator {
-        AND, OR
+        AND,
+        OR
     }
 
     @Data

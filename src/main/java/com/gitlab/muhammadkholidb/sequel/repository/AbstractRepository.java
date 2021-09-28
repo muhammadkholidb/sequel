@@ -48,6 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @param <M>
+ * 
  * @author muhammad
  */
 @Slf4j
@@ -137,10 +138,16 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         try {
             Method method = this.modelClass.getMethod("tableName");
             return (String) method.invoke(this.modelClass.getDeclaredConstructor().newInstance());
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException | InstantiationException e) {
+        } catch (
+                IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException
+                | NoSuchMethodException
+                | SecurityException
+                | InstantiationException e) {
             throw new UnsupportedOperationException(
-                    "Unable to find and invoke method tableName() of the underlying class", e);
+                    "Unable to find and invoke method tableName() of the underlying class",
+                    e);
         }
     }
 
@@ -175,6 +182,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * string if no quote string spcified by the database.
      * 
      * @param word the word to be quoted with
+     * 
      * @return the quoted word
      */
     protected String quote(String word) {
@@ -660,12 +668,13 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * @param sql
      * @param returnType
      * @param params
+     * 
      * @return
      */
     protected <T> List<T> performSelect(String sql, Class<T> returnType, Object... params) {
         printGeneratedSQL(sql);
-        return jdbcTemplate.query(sql, new CustomArgumentPreparedStatementSetter(params),
-                new CustomBeanRowMapper<>(returnType));
+        return jdbcTemplate
+                .query(sql, new CustomArgumentPreparedStatementSetter(params), new CustomBeanRowMapper<>(returnType));
     }
 
     /**
@@ -675,6 +684,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * @param sql
      * @param returnType
      * @param params
+     * 
      * @return
      */
     protected <T> List<T> performSelect(String sql, List<Object> params, Class<T> returnType) {
@@ -687,6 +697,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * 
      * @param sql
      * @param params
+     * 
      * @return
      */
     protected int executeUpdate(String sql, Object... params) {
@@ -700,6 +711,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
      * 
      * @param sql
      * @param params
+     * 
      * @return
      */
     protected int executeUpdate(String sql, List<Object> params) {

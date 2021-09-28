@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.function.UnaryOperator;
 
 /**
- *
  * @author muhammad
  */
 public class Order {
@@ -64,7 +63,7 @@ public class Order {
         public String abbr() {
             return this.abbr;
         }
-        
+
         public static Direction byAbbr(String abbr) {
             for (Direction direction : values()) {
                 if (direction.abbr.equalsIgnoreCase(abbr)) {

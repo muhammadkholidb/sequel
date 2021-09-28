@@ -40,8 +40,10 @@ public abstract class RepositoryTestBase {
     @Configuration
     @ComponentScan(basePackageClasses = RepositoryTestBase.class)
     @Import(SequelConfig.class)
-    @PropertySource(value = { "classpath:application-test.properties",
-            "classpath:application-${spring.profiles.active}.properties" }, ignoreResourceNotFound = true)
+    @PropertySource(value = {
+            "classpath:application-test.properties",
+            "classpath:application-${spring.profiles.active}.properties" },
+        ignoreResourceNotFound = true)
     public static class Config {
 
         @Autowired
@@ -49,7 +51,8 @@ public abstract class RepositoryTestBase {
 
         @Bean
         public IDatabaseConnection databaseConnection(DataSource dataSource, DatabaseMetaData databaseMetaData)
-                throws SQLException, DatabaseUnitException {
+                throws SQLException,
+                DatabaseUnitException {
             DatabaseDataSourceConnection databaseConnection = new DatabaseDataSourceConnection(dataSource);
             DatabaseConfig databaseConfig = databaseConnection.getConfig();
             databaseConfig.setProperty(DatabaseConfig.FEATURE_ALLOW_EMPTY_FIELDS, true);
