@@ -245,7 +245,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     @Test
     void testReadOne_shouldSucceed() {
         Optional<Table> result = tableRepository.readOne(3l);
-        assertThat(result.isEmpty(), is(true));
+        assertThat(result.isPresent(), is(false));
     }
 
     @Test
@@ -301,7 +301,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
     @Test
     void testReadOneForUpdate_shouldSucceed() {
         Optional<Table> result = tableRepository.readOneForUpdate(3l);
-        assertThat(result.isEmpty(), is(true));
+        assertThat(result.isPresent(), is(false));
     }
 
     @Test

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -42,7 +41,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 
@@ -255,12 +253,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         sb.append(quoteIfReserved(tableName));
         if (!values.isEmpty()) {
-            sb.append(where.getClause(new UnaryOperator<String>() {
-                @Override
-                public String apply(String s) {
-                    return quoteIfReserved(s);
-                }
-            }));
+            sb.append(where.getClause(this::quoteIfReserved));
         }
         if (!includeDeleted) {
             sb.append(values.isEmpty() ? " WHERE " : " AND ");
@@ -268,12 +261,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             sb.append(" IS NULL ");
         }
         if (order != null) {
-            sb.append(order.getClause(new UnaryOperator<String>() {
-                @Override
-                public String apply(String s) {
-                    return quoteIfReserved(s);
-                }
-            }));
+            sb.append(order.getClause(this::quoteIfReserved));
         }
         if (limit != null) {
             sb.append(limitFactory.getClause(limit));
@@ -405,12 +393,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         sb.append(quoteIfReserved(tableName));
         if (!values.isEmpty()) {
-            sb.append(where.getClause(new UnaryOperator<String>() {
-                @Override
-                public String apply(String s) {
-                    return quoteIfReserved(s);
-                }
-            }));
+            sb.append(where.getClause(this::quoteIfReserved));
         }
         if (!includeDeleted) {
             sb.append(values.isEmpty() ? " WHERE " : " AND ");
@@ -484,12 +467,10 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         final CustomArgumentPreparedStatementSetter pss = new CustomArgumentPreparedStatementSetter(
                 listValues.toArray());
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
-        jdbcTemplate.update(new PreparedStatementCreator() {
-            public PreparedStatement createPreparedStatement(java.sql.Connection con) throws SQLException {
-                PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
-                pss.setValues(ps);
-                return ps;
-            }
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[] { "id" });
+            pss.setValues(ps);
+            return ps;
         }, holder);
         return holder.getKey().longValue();
     }
@@ -564,12 +545,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
             }
         }
         if (where != null) {
-            sb.append(where.getClause(new UnaryOperator<String>() {
-                @Override
-                public String apply(String s) {
-                    return quoteIfReserved(s);
-                }
-            }));
+            sb.append(where.getClause(this::quoteIfReserved));
         }
         return sb;
     }
@@ -656,12 +632,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         }
         sb.append(quoteIfReserved(tableName));
         if (where != null) {
-            sb.append(where.getClause(new UnaryOperator<String>() {
-                @Override
-                public String apply(String s) {
-                    return quoteIfReserved(s);
-                }
-            }));
+            sb.append(where.getClause(this::quoteIfReserved));
         }
         String sql = sb.toString();
         return executeUpdate(sql, where == null ? new ArrayList<>() : where.getValues());
