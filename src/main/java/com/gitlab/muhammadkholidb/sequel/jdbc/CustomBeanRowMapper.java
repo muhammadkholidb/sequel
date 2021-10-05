@@ -42,7 +42,8 @@ public class CustomBeanRowMapper<T> extends BeanPropertyRowMapper<T> {
         }
         if (OffsetDateTime.class == type) {
             Timestamp timestamp = rs.getTimestamp(index);
-            return timestamp == null ? null : OffsetDateTime.of(timestamp.toLocalDateTime(), DateTimeUtils.DEFAULT_ZONE_OFFSET);
+            return timestamp == null ?
+                    null : OffsetDateTime.of(timestamp.toLocalDateTime(), DateTimeUtils.DEFAULT_ZONE_OFFSET);
         }
         if (OffsetTime.class == type) {
             Time time = rs.getTime(index);
