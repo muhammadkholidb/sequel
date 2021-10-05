@@ -1,7 +1,5 @@
 package com.gitlab.muhammadkholidb.sequel.jdbc;
 
-import static com.gitlab.muhammadkholidb.toolbox.data.DateTimeUtils.getDefaultZoneOffset;
-
 import java.beans.PropertyDescriptor;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -16,6 +14,8 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
+import com.gitlab.muhammadkholidb.toolbox.data.DateTimeUtils;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
@@ -42,11 +42,11 @@ public class CustomBeanRowMapper<T> extends BeanPropertyRowMapper<T> {
         }
         if (OffsetDateTime.class == type) {
             Timestamp timestamp = rs.getTimestamp(index);
-            return timestamp == null ? null : OffsetDateTime.of(timestamp.toLocalDateTime(), getDefaultZoneOffset());
+            return timestamp == null ? null : OffsetDateTime.of(timestamp.toLocalDateTime(), DateTimeUtils.DEFAULT_ZONE_OFFSET);
         }
         if (OffsetTime.class == type) {
             Time time = rs.getTime(index);
-            return time == null ? null : OffsetTime.of(time.toLocalTime(), getDefaultZoneOffset());
+            return time == null ? null : OffsetTime.of(time.toLocalTime(), DateTimeUtils.DEFAULT_ZONE_OFFSET);
         }
         if (LocalDate.class == type) {
             Date date = rs.getDate(index);
