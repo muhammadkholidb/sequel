@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.gitlab.muhammadkholidb</groupId>
             <artifactId>toolbox</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.dbunit</groupId>
@@ -215,7 +215,6 @@
 					<mvnExecutable>./mvnw</mvnExecutable>
 					<gitFlowConfig>
 						<developmentBranch>master</developmentBranch>
-						<versionTagPrefix>v</versionTagPrefix>
 					</gitFlowConfig>
 				</configuration>
 			</plugin>
