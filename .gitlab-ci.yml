@@ -1,8 +1,4 @@
-# References: 
-# https://gitlab.com/gitlab-org/gitlab-ci-yml/blob/master/Maven.gitlab-ci.yml
-# https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
-
-image: maven:3.6.1-jdk-8-alpine
+image: adoptopenjdk/openjdk8-openj9:alpine-slim
 
 # DinD service is required for Testcontainers
 services:
@@ -15,30 +11,43 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   # Improve performance with overlayfs.
   DOCKER_DRIVER: overlay2
-  MAVEN_CLI_OPTS: "--show-version \
-                   --batch-mode \
-                   -Duser.timezone=Asia/Jakarta \
-                   -Dhttps.protocols=TLSv1.2 \
-                   -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository \
-                   -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN \
-                   -Dorg.slf4j.simpleLogger.showDateTime=true \
-                   -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--show-version --batch-mode \
+    -Dmaven.repo.local=.m2/repository \
+    -Duser.timezone=Asia/Jakarta \
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 
 cache:
- paths:
-   - .m2/repository/
+  paths:
+    - .m2/repository/
+
+default:
+  before_script:
+    - apk add --update --no-cache git
+    - git --version
+    - git remote set-url --push origin "https://${GITLAB_USER_LOGIN}:${READ_WRITE_REPOSITORY_ACCESS_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git config user.name "${GITLAB_USER_NAME}"
+    - git config user.email "${GITLAB_USER_EMAIL}"
+
+stages:
+  - build
+  - test
+  - release
 
 build:
   stage: build
-  script: mvn $MAVEN_CLI_OPTS spotless:check test-compile -U
+  script: ./mvnw $MAVEN_CLI_OPTS spotless:check test-compile -U
   allow_failure: false
+  only:
+    - develop
 
 test-h2:
   variables:
     JACOCO_REPORT_HTML: $CI_PROJECT_DIR/target/site/jacoco/index.html
   stage: test
-  script: 
-    - mvn $MAVEN_CLI_OPTS verify -U
+  dependencies:
+    - build
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS verify -U
     - if [ -f $JACOCO_REPORT_HTML ]; then cat $JACOCO_REPORT_HTML | grep -o "Total[^%]*%"; fi
   allow_failure: false
   coverage: "/Total.*?([0-9]{1,3})%/"
@@ -46,13 +55,17 @@ test-h2:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
+  only:
+    - develop
 
 test-postgresql:
   variables:
     JACOCO_REPORT_HTML: $CI_PROJECT_DIR/target/site/jacoco/index.html
   stage: test
-  script: 
-    - mvn $MAVEN_CLI_OPTS verify -Dspring.profiles.active=test-postgresql -U
+  dependencies:
+    - build
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS verify -Dspring.profiles.active=test-postgresql -U
     - if [ -f $JACOCO_REPORT_HTML ]; then cat $JACOCO_REPORT_HTML | grep -o "Total[^%]*%"; fi
   allow_failure: false
   coverage: "/Total.*?([0-9]{1,3})%/"
@@ -60,13 +73,17 @@ test-postgresql:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
+  only:
+    - develop
 
 test-mysql:
   variables:
     JACOCO_REPORT_HTML: $CI_PROJECT_DIR/target/site/jacoco/index.html
   stage: test
-  script: 
-    - mvn $MAVEN_CLI_OPTS verify -Dspring.profiles.active=test-mysql -U
+  dependencies:
+    - build
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS verify -Dspring.profiles.active=test-mysql -U
     - if [ -f $JACOCO_REPORT_HTML ]; then cat $JACOCO_REPORT_HTML | grep -o "Total[^%]*%"; fi
   allow_failure: false
   coverage: "/Total.*?([0-9]{1,3})%/"
@@ -74,3 +91,17 @@ test-mysql:
     reports:
       junit:
         - target/surefire-reports/TEST-*.xml
+  only:
+    - develop
+
+release:
+  stage: release
+  dependencies:
+    - test-h2
+    - test-postgresql
+    - test-mysql
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS gitflow:release
+  only:
+    - develop
+  when: manual
