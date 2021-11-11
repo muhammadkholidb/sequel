@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -366,7 +365,7 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
                 new Where().lowerThan("created_at", Instant.now()).andLowerThan("zdt", ZonedDateTime.now())
                         .andLowerThan("odt", OffsetDateTime.now()).andLowerThan("ldt", LocalDateTime.now())
                         .andEquals("ld", LocalDate.of(2021, 4, 1)).andEquals("lt", LocalTime.of(21, 0, 0))
-                        .andEquals("ot", OffsetTime.of(LocalTime.of(13, 0, 0), ZoneOffset.UTC)));
+                        .andEquals("ot", OffsetTime.of(LocalTime.of(20, 0, 0), ZonedDateTime.now().getOffset())));
         assertThat(result.isPresent(), is(true));
     }
 

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gitlab.muhammadkholidb</groupId>
     <artifactId>sequel</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
     <name>Sequel</name>
     <description>SQL helpers for Spring's JDBCTemplate</description>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.gitlab.muhammadkholidb</groupId>
             <artifactId>toolbox</artifactId>
-            <version>1.0.0</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.dbunit</groupId>
@@ -203,21 +203,18 @@
                         <removeUnusedImports />
                         <eclipse>
                             <file>${basedir}/formatter.xml</file>
-                          </eclipse>
+                        </eclipse>
                     </java>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>com.amashchenko.maven.plugin</groupId>
-				<artifactId>gitflow-maven-plugin</artifactId>
-				<version>1.16.0</version>
-				<configuration>
-					<mvnExecutable>./mvnw</mvnExecutable>
-					<gitFlowConfig>
-						<developmentBranch>master</developmentBranch>
-					</gitFlowConfig>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>1.16.0</version>
+                <configuration>
+                    <mvnExecutable>./mvnw</mvnExecutable>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
