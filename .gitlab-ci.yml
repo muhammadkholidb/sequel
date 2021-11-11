@@ -101,7 +101,7 @@ release:
     - test-postgresql
     - test-mysql
   script:
-    - ./mvnw $MAVEN_CLI_OPTS gitflow:release
+    - ./mvnw $MAVEN_CLI_OPTS gitflow:release -DargLine=$MAVEN_CLI_OPTS 
   only:
     - develop
   when: manual

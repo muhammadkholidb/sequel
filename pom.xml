@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gitlab.muhammadkholidb</groupId>
     <artifactId>sequel</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Sequel</name>
     <description>SQL helpers for Spring's JDBCTemplate</description>
@@ -213,9 +213,6 @@
                 <version>1.16.0</version>
                 <configuration>
                     <mvnExecutable>./mvnw</mvnExecutable>
-                    <gitFlowConfig>
-                        <developmentBranch>master</developmentBranch>
-                    </gitFlowConfig>
                 </configuration>
             </plugin>
         </plugins>
