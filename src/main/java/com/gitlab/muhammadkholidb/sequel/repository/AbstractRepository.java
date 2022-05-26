@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import com.gitlab.muhammadkholidb.sequel.annotation.DataColumn;
+import com.gitlab.muhammadkholidb.sequel.annotation.DataTable;
 import com.gitlab.muhammadkholidb.sequel.jdbc.CustomArgumentPreparedStatementSetter;
 import com.gitlab.muhammadkholidb.sequel.jdbc.CustomBeanRowMapper;
 import com.gitlab.muhammadkholidb.sequel.model.DataModel;
@@ -35,6 +36,7 @@ import com.gitlab.muhammadkholidb.sequel.sql.LimitFactory;
 import com.gitlab.muhammadkholidb.sequel.sql.Order;
 import com.gitlab.muhammadkholidb.sequel.sql.Where;
 import com.gitlab.muhammadkholidb.sequel.utility.SQLUtils;
+import com.gitlab.muhammadkholidb.toolbox.data.NamingUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -110,7 +112,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
 
     protected Set<String> sqlReservedWords;
 
-    private String tableName;
+    protected String tableName;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected AbstractRepository(Class<M> modelClass) {
@@ -121,7 +123,7 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         } else {
             this.modelClass = modelClass;
         }
-        tableName = getModelTableName();
+        loadTableName();
     }
 
     protected AbstractRepository() {
@@ -134,21 +136,33 @@ public abstract class AbstractRepository<M extends DataModel> implements CommonR
         loadSqlReservedWords();
     }
 
-    private String getModelTableName() {
-        try {
-            Method method = this.modelClass.getMethod("tableName");
-            return (String) method.invoke(this.modelClass.getDeclaredConstructor().newInstance());
-        } catch (
-                IllegalAccessException
-                | IllegalArgumentException
-                | InvocationTargetException
-                | NoSuchMethodException
-                | SecurityException
-                | InstantiationException e) {
-            throw new UnsupportedOperationException(
-                    "Unable to find and invoke method tableName() of the underlying class",
-                    e);
+    private void loadTableName() {
+        DataTable annotation = this.modelClass.getAnnotation(DataTable.class);
+        if (annotation != null) {
+            this.tableName = annotation.value();
+            if (StringUtils.isBlank(this.tableName)) {
+                throw new IllegalArgumentException("DataTable value cannot be null or empty");
+            }
+            return;
         }
+        log.debug("Unable to get table name from @DataTable annotation. Checking for tableName() method.");
+        try {
+            Method method = this.modelClass.getDeclaredMethod("tableName");
+            this.tableName = (String) method.invoke(this.modelClass.getDeclaredConstructor().newInstance());
+            if (StringUtils.isBlank(this.tableName)) {
+                throw new IllegalArgumentException("Method tableName() must not return null or empty value");
+            }
+            return;
+        } catch (
+                NoSuchMethodException
+                | SecurityException
+                | IllegalAccessException
+                | InvocationTargetException
+                | InstantiationException
+                | IllegalArgumentException e) {
+            log.debug("Unable to locate tableName() method. Use model class name as the table name instead.");
+        }
+        this.tableName = NamingUtils.toSnakeCase(this.modelClass.getSimpleName());
     }
 
     private void loadSqlQuoteString() {

@@ -411,11 +411,6 @@ public class AbstractRepositoryTest extends RepositoryTestBase {
         @DataColumn("lt")
         private LocalTime lt;
 
-        @Override
-        public String tableName() {
-            return "table";
-        }
-
     }
 
 }
