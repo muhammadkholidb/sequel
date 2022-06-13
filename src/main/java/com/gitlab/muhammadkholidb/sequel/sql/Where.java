@@ -2,7 +2,6 @@ package com.gitlab.muhammadkholidb.sequel.sql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 import lombok.Data;
@@ -424,29 +423,26 @@ public class Where {
 
     public List<Object> getValues() {
         final List<Object> values = new ArrayList<>();
-        holders.forEach(new Consumer<Holder>() {
-            public void accept(Holder holder) {
-                Object value = holder.getValue();
-                if (value == null) {
-                    return;
-                }
-                if (value instanceof List) {
-                    values.addAll((List<?>) value);
-                } else {
-                    values.add(value);
-                }
+        holders.forEach(holder -> {
+            if (Condition.WHERE.equals(holder.getCondition())) {
+                values.addAll(holder.getWhere().getValues());
+                return;
+            }
+            Object value = holder.getValue();
+            if (value == null) {
+                return;
+            }
+            if (value instanceof List) {
+                values.addAll((List<?>) value);
+            } else {
+                values.add(value);
             }
         });
         return values;
     }
 
     public String getClause() {
-        return getClause(new UnaryOperator<String>() {
-            @Override
-            public String apply(String col) {
-                return col;
-            }
-        });
+        return getClause(col -> col);
     }
 
     public String getClause(UnaryOperator<String> fnColumn) {
@@ -461,7 +457,10 @@ public class Where {
             Operator operator = holder.getOperator();
             Where where = holder.getWhere();
             Condition condition = holder.getCondition();
-            String column = fnColumn.apply(holder.getColumn());
+            String column = holder.getColumn();
+            if (!Condition.WHERE.equals(condition)) {
+                column = fnColumn.apply(column);
+            }
             Object value = holder.getValue();
             boolean negated = Boolean.TRUE.equals(holder.getNegated());
             if (i > 0) {
@@ -469,10 +468,8 @@ public class Where {
             }
             switch (condition) {
                 case WHERE:
-                    sb.append(" (");
                     // remove " WHERE " inside this WHERE
                     sb.append(where.getClause(fnColumn).substring(PREFIX.length()));
-                    sb.append(") ");
                     break;
                 case EQUALS:
                     sb.append(" ");
